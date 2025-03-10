@@ -1,4 +1,4 @@
-package fr.isen.onlyfakes.payment
+package fr.isen.onlyfakes.view
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
