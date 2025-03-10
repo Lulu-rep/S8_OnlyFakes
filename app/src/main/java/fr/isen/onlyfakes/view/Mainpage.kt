@@ -35,8 +35,6 @@ fun MainScreen(modifier: Modifier) {
     }
 
     Scaffold(
-        topBar = { headerBar() },
-        bottomBar = { navigationBar() },
         content = { innerPadding ->
             Column(
                 modifier = Modifier
