@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">OnlyFakes</string>
+    <string name="login_label">Login</string>
+    <string name="login_placeholder">example@gmail.com</string>
+    <string name="password_label">Password</string>
+    <string name="password_placeholder">*********</string>
+    <string name="sign_in_button">Sign In</string>
+    <string name="forget_password_option">Forget password?</string>
+    <string name="register_option">Register</string>
+    <string name="confirmation_password">Password Confirmation</string>
+    <string name="creation_account_button">Create an Account</string>
+    <string name="cancel_button">Cancel</string>
 </resources>
