@@ -1,10 +1,10 @@
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.auth.User
+package fr.isen.onlyfakes.services
+
 import fr.isen.onlyfakes.models.UserModel
+import fr.isen.onlyfakes.services.instances.FirebaseFirestoreInstance.db
 import kotlinx.coroutines.tasks.await
 
 class UserServices {
-    private val db = FirebaseFirestore.getInstance()
 
     suspend fun createUser(user: UserModel): Result<Unit> {
         return try {

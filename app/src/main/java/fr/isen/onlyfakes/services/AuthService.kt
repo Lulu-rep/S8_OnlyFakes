@@ -1,5 +1,7 @@
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
+import fr.isen.onlyfakes.models.UserModel
+import fr.isen.onlyfakes.services.UserServices
 import fr.isen.onlyfakes.services.instances.FirebaseAuthInstance
 import kotlinx.coroutines.tasks.await
 
@@ -12,7 +14,7 @@ class AuthService {
             val user = userCredential.user
 
             if (user != null) {
-                UserServices().createUser(User(
+                UserServices().createUser(UserModel(
                     uid = user.uid,
                     firstName = firstName,
                     lastName = lastName,
