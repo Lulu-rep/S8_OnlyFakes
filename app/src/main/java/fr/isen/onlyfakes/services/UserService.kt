@@ -1,18 +1,12 @@
-import com.google.firebase.firestore.FirebaseFirestore
+package fr.isen.onlyfakes.services
+
+import fr.isen.onlyfakes.models.UserModel
+import fr.isen.onlyfakes.services.instances.FirebaseFirestoreInstance.db
 import kotlinx.coroutines.tasks.await
 
-data class User(
-    val uid: String = "",
-    val firstName: String = "",
-    val lastName: String = "",
-    val email: String = "",
-    val username: String = "",
-)
-
 class UserServices {
-    private val db = FirebaseFirestore.getInstance()
 
-    suspend fun createUser(user: User): Result<Unit> {
+    suspend fun createUser(user: UserModel): Result<Unit> {
         return try {
             db.collection("users").document(user.uid).set(
                 mapOf(
@@ -28,11 +22,11 @@ class UserServices {
         }
     }
 
-    suspend fun getUser(uid: String): Result<User> {
+    suspend fun getUser(uid: String): Result<UserModel> {
         return try {
             val document = db.collection("users").document(uid).get().await()
             if (document.exists()) {
-                val user = document.toObject(User::class.java)
+                val user = document.toObject(UserModel::class.java)
                 user?.let { Result.success(it) } ?: Result.failure(Exception("User not found"))
             } else {
                 Result.failure(Exception("User not found"))
@@ -42,7 +36,7 @@ class UserServices {
         }
     }
 
-    suspend fun updateUser(user: User): Result<Unit> {
+    suspend fun updateUser(user: UserModel): Result<Unit> {
         return try {
             db.collection("users").document(user.uid).update(
                 mapOf(
