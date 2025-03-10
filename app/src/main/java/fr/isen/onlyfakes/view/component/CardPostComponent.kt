@@ -26,17 +26,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import fr.isen.onlyfakes.R
 import fr.isen.onlyfakes.models.PostModel
+import fr.isen.onlyfakes.services.PostsService
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun CardPostComponent(postcard: PostModel , modifier: Modifier) {
+    val coroutineScope = rememberCoroutineScope()
         Card(
             modifier = modifier
                 .fillMaxWidth()
@@ -104,7 +110,12 @@ fun CardPostComponent(postcard: PostModel , modifier: Modifier) {
                     )
 
                     FloatingActionButton(
-                        onClick = { TODO("Add Comment logic") },
+                        onClick = {
+                            coroutineScope.launch{
+                                PostsService().addComment(postcard.id, userComment)
+                            }
+
+                        },
                         containerColor = MaterialTheme.colorScheme.primary
                     ) {
                         Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")

@@ -28,7 +28,6 @@ fun MainScreen(modifier: Modifier) {
                 posts = fetchedPosts
                 Log.d("MainScreen", "Fetched posts: $fetchedPosts")
             }.onFailure { exception ->
-                // Handle the error
                 Log.e("MainScreen", "Error fetching posts: ${exception.message}")
             }
         }
