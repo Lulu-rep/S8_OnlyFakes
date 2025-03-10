@@ -33,10 +33,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import fr.isen.onlyfakes.R
-import fr.isen.onlyfakes.ui.theme.OnlyFakesTheme
+import fr.isen.onlyfakes.models.PostModel
 
 @Composable
-fun CardPostComponent(modifier: Modifier = Modifier) {
+fun CardPostComponent(postcard: PostModel , modifier: Modifier) {
         Card(
             modifier = modifier
                 .fillMaxWidth()
@@ -56,7 +56,7 @@ fun CardPostComponent(modifier: Modifier = Modifier) {
                             modifier = Modifier.size(40.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Username", style = MaterialTheme.typography.bodyLarge)
+                        Text("username", style = MaterialTheme.typography.bodyLarge)
                     }
                     Icon(Icons.Default.MoreVert, contentDescription = "More options")
                 }
@@ -75,9 +75,9 @@ fun CardPostComponent(modifier: Modifier = Modifier) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Column {
-                    Text("Titre", style = MaterialTheme.typography.bodyMedium)
+                    Text(postcard.title, style = MaterialTheme.typography.bodyMedium)
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text("Description", style = MaterialTheme.typography.bodySmall)
+                    Text(postcard.content, style = MaterialTheme.typography.bodySmall)
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))

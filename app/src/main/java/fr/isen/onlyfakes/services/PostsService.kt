@@ -107,35 +107,13 @@ class PostsService {
 
             if (snapshots != null) {
                 val posts = mutableListOf<PostModel>()
-                for (dc in snapshots.documentChanges) {
-                    when (dc.type) {
-                        DocumentChange.Type.ADDED -> {
-                            dc.document.toObject(PostModel::class.java)?.let { post ->
-                                post.id = dc.document.id
-                                posts.add(post)
-                            }
-                            Log.d("PostsService", "New post: ${dc.document.data}")
-                        }
-                        DocumentChange.Type.MODIFIED -> {
-                            dc.document.toObject(PostModel::class.java)?.let { post ->
-                                post.id = dc.document.id
-                                val index = posts.indexOfFirst { it.id == post.id }
-                                if (index != -1) {
-                                    posts[index] = post
-                                    Log.d("PostsService", "Modified post: ${dc.document.data}")
-                                } else {
-                                    posts.add(post)
-                                    Log.d("PostsService", "Added modified post: ${dc.document.data}")
-                                }
-                            }
-                        }
-                        DocumentChange.Type.REMOVED -> {
-                            val postId = dc.document.id
-                            posts.removeAll { it.id == postId }
-                            Log.d("PostsService", "Removed post: ${dc.document.data}")
-                        }
+                for (document in snapshots.documents) {
+                    document.toObject(PostModel::class.java)?.let { post ->
+                        post.id = document.id
+                        posts.add(post)
                     }
                 }
+                Log.d("PostsService", "Posts: $posts")
                 callback(Result.success(posts))
             }
         }
