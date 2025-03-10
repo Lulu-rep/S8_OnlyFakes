@@ -37,12 +37,15 @@ import androidx.lifecycle.lifecycleScope
 import fr.isen.onlyfakes.R
 import fr.isen.onlyfakes.models.PostModel
 import fr.isen.onlyfakes.services.PostsService
+import fr.isen.onlyfakes.services.instances.FirebaseAuthInstance
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun CardPostComponent(postcard: PostModel , modifier: Modifier) {
     val coroutineScope = rememberCoroutineScope()
+    var userComment by remember { mutableStateOf("") }
+    var isLiked by remember { mutableStateOf(postcard.likes.contains(FirebaseAuthInstance.auth.uid)) }
         Card(
             modifier = modifier
                 .fillMaxWidth()
@@ -93,9 +96,17 @@ fun CardPostComponent(postcard: PostModel , modifier: Modifier) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    var userComment by remember { mutableStateOf("") }
                     FloatingActionButton(
-                        onClick = { TODO("Add Like logic") },
+                        onClick = {
+                            coroutineScope.launch{
+                                if (isLiked){
+                                    PostsService().unlikePost(postcard.id)
+                                } else {
+                                    PostsService().likePost(postcard.id)
+                                }
+                                isLiked = !isLiked
+                            }
+                        },
                         containerColor = MaterialTheme.colorScheme.primary
                     ) {
                         Icon(Icons.Default.FavoriteBorder, contentDescription = "Like")
@@ -113,6 +124,7 @@ fun CardPostComponent(postcard: PostModel , modifier: Modifier) {
                         onClick = {
                             coroutineScope.launch{
                                 PostsService().addComment(postcard.id, userComment)
+                                userComment = ""
                             }
 
                         },
