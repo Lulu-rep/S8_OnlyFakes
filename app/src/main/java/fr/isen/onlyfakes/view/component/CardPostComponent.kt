@@ -37,7 +37,6 @@ import fr.isen.onlyfakes.ui.theme.OnlyFakesTheme
 
 @Composable
 fun CardPostComponent(modifier: Modifier = Modifier) {
-    OnlyFakesTheme {
         Card(
             modifier = modifier
                 .fillMaxWidth()
@@ -113,5 +112,4 @@ fun CardPostComponent(modifier: Modifier = Modifier) {
                 }
             }
         }
-    }
 }
