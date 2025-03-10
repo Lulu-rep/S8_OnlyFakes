@@ -1,12 +1,12 @@
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
+import fr.isen.onlyfakes.services.instances.FirebaseAuthInstance
 import kotlinx.coroutines.tasks.await
 
-
 class AuthService {
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val auth: FirebaseAuth = FirebaseAuthInstance.auth
 
-    suspend fun registerUser(email: String, password: String, firstName: String, lastName: String): Result<Unit> {
+    suspend fun registerUser(email: String, password: String, firstName: String, lastName: String, username: String): Result<Unit> {
         return try {
             val userCredential = auth.createUserWithEmailAndPassword(email, password).await()
             val user = userCredential.user
@@ -16,8 +16,9 @@ class AuthService {
                     uid = user.uid,
                     firstName = firstName,
                     lastName = lastName,
+                    username = username,
                     email = email
-                )).await()
+                ))
                 Result.success(Unit)
             } else {
                 Result.failure(Exception("User registration failed"))

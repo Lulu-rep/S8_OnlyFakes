@@ -6,8 +6,7 @@ data class User(
     val firstName: String = "",
     val lastName: String = "",
     val email: String = "",
-    val createdAt: String? = null,
-    val lastLogin: String? = null
+    val username: String = "",
 )
 
 class UserServices {
@@ -20,6 +19,7 @@ class UserServices {
                     "firstName" to user.firstName,
                     "lastName" to user.lastName,
                     "email" to user.email,
+                    "username" to user.username,
                 )
             ).await()
             Result.success(Unit)
