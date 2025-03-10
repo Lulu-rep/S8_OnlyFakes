@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -69,7 +70,17 @@ fun CardPostComponent(postcard: PostModel, modifier: Modifier) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("username", style = MaterialTheme.typography.bodyLarge)
                 }
-                Icon(Icons.Default.MoreVert, contentDescription = "More options")
+                if(postcard.authorUid == FirebaseAuthInstance.auth.uid) {
+                    IconButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                PostsService().deletePost(postcard.id)
+                            }
+                        }
+                    ) {
+                        Icon(Icons.Default.Clear, contentDescription = "Delete post")
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
