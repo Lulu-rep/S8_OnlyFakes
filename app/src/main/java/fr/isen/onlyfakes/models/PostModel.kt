@@ -3,7 +3,7 @@ package fr.isen.onlyfakes.models
 import java.util.Date
 
 data class PostModel(
-    val id: String = "",
+    var id: String = "",
     val authorUid: String = "",
     val title: String = "",
     val content: String = "",
