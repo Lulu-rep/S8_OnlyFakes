@@ -35,9 +35,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycleScope.launch {
-            AuthService().logInUser("test@test.com", "123456")
-        }
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
