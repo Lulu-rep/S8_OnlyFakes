@@ -5,3 +5,9 @@ enum class Routes() {
     ADDPOST,
     ACCOUNT
 }
+
+enum class LoginRoutes() {
+    LOGIN,
+    REGISTER,
+    RESET
+}

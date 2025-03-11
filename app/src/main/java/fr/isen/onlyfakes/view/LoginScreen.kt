@@ -34,14 +34,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import fr.isen.onlyfakes.R
 import kotlinx.coroutines.launch
 import fr.isen.onlyfakes.MainActivity
+import fr.isen.onlyfakes.enums.LoginRoutes
 
 @Composable
 fun LoginScreen() {
-    var currentScreen by remember { mutableStateOf("login") }
 
+    var navController = rememberNavController()
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -54,25 +59,16 @@ fun LoginScreen() {
             contentDescription = stringResource(R.string.logo_description),
         )
         Spacer(modifier = Modifier.height(32.dp))
-        when (currentScreen) {
-            "login" -> LoginCard(
-                onRegisterClick = { currentScreen = "register" },
-                onForgotPasswordClick = { currentScreen = "reset_password" }
-            )
-
-            "register" -> CreateAccountCard(
-                onBackToLogin = { currentScreen = "login" }
-            )
-
-            "reset_password" -> CardResetPassword(
-                onBackToLogin = { currentScreen = "login" }
-            )
-        }
+        NavHost(navController = navController, startDestination = LoginRoutes.LOGIN.toString(), builder = {
+            composable(LoginRoutes.LOGIN.toString()) { LoginCard(navController) }
+            composable(LoginRoutes.REGISTER.toString()) { CreateAccountCard(navController) }
+            composable(LoginRoutes.RESET.toString()) { CardResetPassword(navController) }
+        })
     }
 }
 
 @Composable
-fun LoginCard(onRegisterClick: () -> Unit, onForgotPasswordClick: () -> Unit) {
+fun LoginCard(navController: NavController) {
     var inputlogin by remember { mutableStateOf("") }
     var inputpassword by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
@@ -143,7 +139,7 @@ fun LoginCard(onRegisterClick: () -> Unit, onForgotPasswordClick: () -> Unit) {
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onForgotPasswordClick() }
+                    .clickable { navController.navigate(LoginRoutes.RESET.toString()) }
                     .padding(8.dp)
             )
             Text(
@@ -151,14 +147,14 @@ fun LoginCard(onRegisterClick: () -> Unit, onForgotPasswordClick: () -> Unit) {
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onRegisterClick() }
+                    .clickable { navController.navigate(LoginRoutes.REGISTER.toString()) }
                     .padding(8.dp))
         }
     }
 }
 
 @Composable
-fun CreateAccountCard(onBackToLogin: () -> Unit) {
+fun CreateAccountCard(navController: NavController) {
     var inputlogin by remember { mutableStateOf("") }
     var inputpassword by remember { mutableStateOf("") }
     var inputusername by remember { mutableStateOf("") }
@@ -229,7 +225,7 @@ fun CreateAccountCard(onBackToLogin: () -> Unit) {
                     text = stringResource(id = R.string.cancel_button),
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier
-                        .clickable { onBackToLogin() }
+                        .clickable { navController.navigate(LoginRoutes.LOGIN.toString()) }
                         .padding(8.dp)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
@@ -270,7 +266,7 @@ fun CreateAccountCard(onBackToLogin: () -> Unit) {
 }
 
 @Composable
-fun CardResetPassword(onBackToLogin: () -> Unit) {
+fun CardResetPassword(navController: NavController) {
     var inputlogin by remember { mutableStateOf("") }
 
     Card(
@@ -308,7 +304,7 @@ fun CardResetPassword(onBackToLogin: () -> Unit) {
                     text = stringResource(id = R.string.cancel_button),
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier
-                        .clickable { onBackToLogin() }
+                        .clickable { navController.navigate(LoginRoutes.LOGIN.toString()) }
                         .padding(8.dp)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
@@ -319,73 +315,6 @@ fun CardResetPassword(onBackToLogin: () -> Unit) {
                     )
                 ) {
                     Text(stringResource(id = R.string.reset_password))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun CardChangePassword(onBackToLogin: () -> Unit) {
-    var inputpassword by remember { mutableStateOf("") }
-    var passwordconfirmation by remember { mutableStateOf("") }
-
-    Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-        ) {
-            Text(
-                text = stringResource(id = R.string.reset_password),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp, bottom = 24.dp),
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = inputpassword,
-                singleLine = true,
-                onValueChange = { inputpassword = it },
-                label = { Text(text = stringResource(id = R.string.newpassword_label)) },
-                placeholder = { Text(text = stringResource(id = R.string.password_placeholder)) }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = passwordconfirmation,
-                singleLine = true,
-                onValueChange = { passwordconfirmation = it },
-                label = { Text(text = stringResource(id = R.string.confirmation_password)) },
-                placeholder = { Text(text = stringResource(id = R.string.password_placeholder)) }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = stringResource(id = R.string.cancel_button),
-                    textDecoration = TextDecoration.Underline,
-                    modifier = Modifier
-                        .clickable { onBackToLogin() }
-                        .padding(8.dp)
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Button(
-                    onClick = { /* TODO */ },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                    )
-                ) {
-                    Text(stringResource(id = R.string.change_password_button))
                 }
             }
         }
