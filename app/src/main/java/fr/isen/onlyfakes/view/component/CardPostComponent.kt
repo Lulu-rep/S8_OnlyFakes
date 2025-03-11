@@ -70,7 +70,7 @@ fun CardPostComponent(postcard: PostModel, modifier: Modifier) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("username", style = MaterialTheme.typography.bodyLarge)
                 }
-                if(postcard.authorUid == FirebaseAuthInstance.auth.uid) {
+                if(postcard.author.keys.contains("id") && postcard.author["id"] == FirebaseAuthInstance.auth.uid) {
                     IconButton(
                         onClick = {
                             coroutineScope.launch {
@@ -173,7 +173,7 @@ fun CardPostComponent(postcard: PostModel, modifier: Modifier) {
                                 Text("username", style = MaterialTheme.typography.bodySmall)
                             }
                         }
-                        if (comment.authorUid == FirebaseAuthInstance.auth.uid) {
+                        if (comment.author.keys.contains("id") && comment.author["id"] == FirebaseAuthInstance.auth.uid) {
                             IconButton(
                                 onClick = {
                                     coroutineScope.launch {

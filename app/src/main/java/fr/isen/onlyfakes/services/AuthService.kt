@@ -1,11 +1,10 @@
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.userProfileChangeRequest
-import fr.isen.onlyfakes.services.instances.FirebaseAuthInstance
+import fr.isen.onlyfakes.services.instances.FirebaseAuthInstance.auth
 import kotlinx.coroutines.tasks.await
 
 class AuthService {
-    private val auth: FirebaseAuth = FirebaseAuthInstance.auth
 
     suspend fun registerUser(email: String, password: String, username: String): Result<Unit> {
         return try {
