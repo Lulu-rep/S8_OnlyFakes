@@ -11,3 +11,7 @@ enum class LoginRoutes() {
     REGISTER,
     RESET
 }
+
+enum class ProfileRoutes(){
+    PAYEMENT
+}

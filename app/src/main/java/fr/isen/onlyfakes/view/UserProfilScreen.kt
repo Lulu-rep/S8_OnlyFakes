@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import fr.isen.onlyfakes.R
+import fr.isen.onlyfakes.enums.ProfileRoutes
 import fr.isen.onlyfakes.models.PostModel
 import fr.isen.onlyfakes.services.PostsService
 import fr.isen.onlyfakes.services.instances.FirebaseAuthInstance
@@ -100,7 +101,7 @@ fun UserProfilView( modifier: Modifier, navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
-                    navController.navigate("payment")
+                    navController.navigate(ProfileRoutes.PAYEMENT.toString())
                 }
             ) {
                 Text("Abonnement Premium")

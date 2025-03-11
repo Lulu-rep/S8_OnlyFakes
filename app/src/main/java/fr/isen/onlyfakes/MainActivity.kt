@@ -21,6 +21,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import fr.isen.onlyfakes.enums.ProfileRoutes
 import fr.isen.onlyfakes.enums.Routes
 import fr.isen.onlyfakes.ui.theme.OnlyFakesTheme
 import fr.isen.onlyfakes.view.LoginScreen
@@ -50,7 +51,7 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.HOME.toString()) { HomeScreen(Modifier.padding(innerPadding)) }
                         composable(Routes.ADDPOST.toString()) { NewPostScreen(Modifier.padding(innerPadding)) }
                         composable(Routes.ACCOUNT.toString()) { UserProfilView(Modifier.padding(innerPadding),navController)}
-                        composable("payment") { PaymentView(Modifier.padding(innerPadding))}
+                        composable(ProfileRoutes.PAYEMENT.toString()) { PaymentView(Modifier.padding(innerPadding))}
                     })
                 }
             }

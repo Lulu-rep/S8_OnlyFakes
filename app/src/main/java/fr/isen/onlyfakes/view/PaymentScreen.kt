@@ -55,7 +55,7 @@ fun PaymentView( mod: Modifier) {
             Text(
                 text = "Profitez de tous les avantages exclusifs en vous abonnant dès maintenant !",
                 textAlign = TextAlign.Center,
-                color = Color.DarkGray,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -75,7 +75,7 @@ fun PaymentView( mod: Modifier) {
             Text(
                 text = avantage,
                 fontSize = 18.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
         }
