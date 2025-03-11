@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -111,22 +112,20 @@ fun LoginCard(onRegisterClick: () -> Unit, onForgotPasswordClick: () -> Unit) {
                 singleLine = true,
                 onValueChange = { inputpassword = it },
                 label = { Text(text = stringResource(id = R.string.password_label)) },
-                placeholder = { Text(text = stringResource(id = R.string.password_placeholder)) }
+                placeholder = { Text(text = stringResource(id = R.string.password_placeholder)) },
+                visualTransformation = PasswordVisualTransformation()
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
                     coroutineScope.launch {
-                        val result = AuthService().logInUser(inputlogin, inputpassword)
+                        val result = AuthService().logInUser(inputlogin.trim(), inputpassword.trim())
                         if (result.isSuccess) {
                             val intent = Intent(context, MainActivity::class.java).apply {}
                             context.startActivity(intent)
                         }else{
-                            Toast(context).apply {
-                                setText(result.exceptionOrNull()?.message)
-                                duration = Toast.LENGTH_SHORT
-                                show()
-                                }
+                            val toast = Toast.makeText(context, result.exceptionOrNull()?.message, Toast.LENGTH_SHORT)
+                            toast.show()
                         }
                     }
                 },
@@ -208,7 +207,8 @@ fun CreateAccountCard(onBackToLogin: () -> Unit) {
                 singleLine = true,
                 onValueChange = { inputpassword = it },
                 label = { Text(text = stringResource(id = R.string.password_label)) },
-                placeholder = { Text(text = stringResource(id = R.string.password_placeholder)) }
+                placeholder = { Text(text = stringResource(id = R.string.password_placeholder)) },
+                visualTransformation = PasswordVisualTransformation()
             )
             Spacer(modifier = Modifier.height(8.dp))
             TextField(
@@ -217,7 +217,8 @@ fun CreateAccountCard(onBackToLogin: () -> Unit) {
                 singleLine = true,
                 onValueChange = { confirmationpassword = it },
                 label = { Text(text = stringResource(id = R.string.confirmation_password)) },
-                placeholder = { Text(text = stringResource(id = R.string.password_placeholder)) }
+                placeholder = { Text(text = stringResource(id = R.string.password_placeholder)) },
+                visualTransformation = PasswordVisualTransformation()
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -237,23 +238,17 @@ fun CreateAccountCard(onBackToLogin: () -> Unit) {
                     onClick = {
                         coroutineScope.launch {
                             if(inputpassword == confirmationpassword){
-                                val result = AuthService().registerUser(inputlogin, inputpassword, inputusername);
+                                val result = AuthService().registerUser(inputlogin.trim(), inputpassword.trim(), inputusername.trim());
                                 if (result.isSuccess) {
                                     val intent = Intent(context, MainActivity::class.java).apply {}
                                     context.startActivity(intent)
                                 }else{
-                                    Toast(context).apply {
-                                        setText(result.exceptionOrNull()?.message)
-                                        duration = Toast.LENGTH_SHORT
-                                        show()
-                                    }
+                                    val toast = Toast.makeText(context, result.exceptionOrNull()?.message, Toast.LENGTH_SHORT)
+                                    toast.show()
                                 }
                             }else{
-                                Toast(context).apply {
-                                    setText("Passwords do not match")
-                                    duration = Toast.LENGTH_SHORT
-                                    show()
-                                }
+                                val toast = Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT)
+                                toast.show()
                             }
                         }
                     },
@@ -355,7 +350,8 @@ fun CardChangePassword(onBackToLogin: () -> Unit) {
                 singleLine = true,
                 onValueChange = { inputpassword = it },
                 label = { Text(text = stringResource(id = R.string.newpassword_label)) },
-                placeholder = { Text(text = stringResource(id = R.string.password_placeholder)) }
+                placeholder = { Text(text = stringResource(id = R.string.password_placeholder)) },
+                visualTransformation = PasswordVisualTransformation()
             )
             Spacer(modifier = Modifier.height(8.dp))
             TextField(
@@ -364,7 +360,8 @@ fun CardChangePassword(onBackToLogin: () -> Unit) {
                 singleLine = true,
                 onValueChange = { passwordconfirmation = it },
                 label = { Text(text = stringResource(id = R.string.confirmation_password)) },
-                placeholder = { Text(text = stringResource(id = R.string.password_placeholder)) }
+                placeholder = { Text(text = stringResource(id = R.string.password_placeholder)) },
+                visualTransformation = PasswordVisualTransformation()
             )
             Spacer(modifier = Modifier.height(16.dp))
             Row(
