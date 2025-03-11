@@ -26,27 +26,44 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import fr.isen.onlyfakes.R
 
 @Composable
-fun LoginScreen() {
-    Column {
-        Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically )
-        {
-            Image(
-                painter= painterResource(id = R.drawable.onlyfakes_logo),
-                contentDescription = "",
+fun LoginScreen(modifier: Modifier = Modifier) {
+    var currentScreen by remember { mutableStateOf("login") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.onlyfakes_logo),
+            contentDescription = stringResource(R.string.logo_description),
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+        when (currentScreen) {
+            "login" -> LoginCard(
+                onRegisterClick = { currentScreen = "register" },
+                onForgotPasswordClick = { currentScreen = "reset_password" }
+            )
+            "register" -> CreateAccountCard(
+                onBackToLogin = { currentScreen = "login" }
+            )
+            "reset_password" -> CardResetPassword(
+                onBackToLogin = { currentScreen = "login" }
             )
         }
     }
-    Spacer(modifier = Modifier.height(32.dp))
-    login_card()
 }
 
 @Composable
-fun login_card() {
+fun LoginCard(onRegisterClick: () -> Unit, onForgotPasswordClick: () -> Unit) {
     var inputlogin by remember { mutableStateOf("") }
     var inputpassword by remember { mutableStateOf("") }
 
@@ -56,9 +73,18 @@ fun login_card() {
     ) {
         Column(
             modifier = Modifier
-                .padding(16.dp) //
+                .padding(16.dp)
                 .fillMaxWidth()
         ) {
+            Text(
+                text = stringResource(id = R.string.login_title),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(24.dp))
             TextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = inputlogin,
@@ -92,7 +118,7 @@ fun login_card() {
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { /* TODO */ }
+                    .clickable { onForgotPasswordClick() }
                     .padding(8.dp)
             )
             Text(
@@ -100,14 +126,14 @@ fun login_card() {
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { /* TODO */ }
+                    .clickable { onRegisterClick() }
                     .padding(8.dp))
         }
     }
 }
 
 @Composable
-fun create_account_card() {
+fun CreateAccountCard(onBackToLogin: () -> Unit) {
     var inputlogin by remember { mutableStateOf("") }
     var inputpassword by remember { mutableStateOf("") }
     var confirmationpassword by remember { mutableStateOf("") }
@@ -121,6 +147,15 @@ fun create_account_card() {
                 .padding(16.dp) //
                 .fillMaxWidth()
         ) {
+            Text(
+                text = stringResource(id = R.string.register_title),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(24.dp))
             TextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = inputlogin,
@@ -148,21 +183,35 @@ fun create_account_card() {
                 placeholder = { Text(text = stringResource(id = R.string.password_placeholder)) }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = { /* TODO */ },
+
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                )
+                horizontalArrangement = Arrangement.Center
             ) {
-                Text(stringResource(id = R.string.creation_account_button))
+                Text(
+                    text = stringResource(id = R.string.cancel_button),
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier
+                        .clickable { onBackToLogin() }
+                        .padding(8.dp)
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Button(
+                    onClick = { /* TODO */ },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    )
+                ) {
+                    Text(stringResource(id = R.string.creation_account_button))
+                }
             }
         }
     }
 }
 
 @Composable
-fun card_reset_password() {
+fun CardResetPassword(onBackToLogin: () -> Unit) {
     var inputlogin by remember { mutableStateOf("") }
 
     Card(
@@ -174,6 +223,15 @@ fun card_reset_password() {
                 .padding(16.dp)
                 .fillMaxWidth()
         ) {
+            Text(
+                text = stringResource(id = R.string.reset_password),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(24.dp))
             TextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = inputlogin,
@@ -183,8 +241,6 @@ fun card_reset_password() {
                 placeholder = { Text(text = stringResource(id = R.string.login_placeholder)) }
             )
             Spacer(modifier = Modifier.height(16.dp))
-
-            // ✅ Centrage correct du texte et du bouton
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
@@ -193,7 +249,7 @@ fun card_reset_password() {
                     text = stringResource(id = R.string.cancel_button),
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier
-                        .clickable { /* TODO */ }
+                        .clickable { onBackToLogin() }
                         .padding(8.dp)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
@@ -203,7 +259,74 @@ fun card_reset_password() {
                         containerColor = MaterialTheme.colorScheme.primary,
                     )
                 ) {
-                    Text(stringResource(id = R.string.creation_account_button))
+                    Text(stringResource(id = R.string.reset_password))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CardChangePassword(onBackToLogin: () -> Unit) {
+    var inputpassword by remember { mutableStateOf("") }
+    var passwordconfirmation by remember { mutableStateOf("") }
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(id = R.string.reset_password),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp, bottom = 24.dp),
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = inputpassword,
+                singleLine = true,
+                onValueChange = { inputpassword = it },
+                label = { Text(text = stringResource(id = R.string.newpassword_label)) },
+                placeholder = { Text(text = stringResource(id = R.string.password_placeholder)) }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = passwordconfirmation,
+                singleLine = true,
+                onValueChange = { passwordconfirmation = it },
+                label = { Text(text = stringResource(id = R.string.confirmation_password)) },
+                placeholder = { Text(text = stringResource(id = R.string.password_placeholder)) }
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = stringResource(id = R.string.cancel_button),
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier
+                        .clickable { onBackToLogin() }
+                        .padding(8.dp)
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Button(
+                    onClick = { /* TODO */ },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    )
+                ) {
+                    Text(stringResource(id = R.string.change_password_button))
                 }
             }
         }
