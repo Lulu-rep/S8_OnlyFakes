@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import fr.isen.onlyfakes.R
 import fr.isen.onlyfakes.models.PostModel
 import fr.isen.onlyfakes.services.PostsService
@@ -62,13 +63,13 @@ fun CardPostComponent(postcard: PostModel, modifier: Modifier) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_launcher_playstore),
-                        contentDescription = "Profile picture",
+                    AsyncImage(
+                        model = postcard.author["imageUrl"],
+                        contentDescription = "Profile Picture",
                         modifier = Modifier.size(40.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("username", style = MaterialTheme.typography.bodyLarge)
+                    postcard.author["name"]?.let { Text(it, style = MaterialTheme.typography.bodyLarge) }
                 }
                 if(postcard.author.keys.contains("id") && postcard.author["id"] == FirebaseAuthInstance.auth.uid) {
                     IconButton(
@@ -85,8 +86,11 @@ fun CardPostComponent(postcard: PostModel, modifier: Modifier) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Image(
-                painter = painterResource(id = R.drawable.ic_launcher_playstore),
+
+            AsyncImage(
+                model = postcard.imageUrl,
+                placeholder = painterResource(id= R.drawable.ic_launcher_playstore),
+                error = painterResource(id = R.drawable.ic_launcher_playstore),
                 contentDescription = "Post picture",
                 modifier = Modifier
                     .fillMaxWidth()
@@ -162,15 +166,15 @@ fun CardPostComponent(postcard: PostModel, modifier: Modifier) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_launcher_playstore),
+                            AsyncImage(
+                                model = comment.author["imageUrl"],
                                 contentDescription = "Comment author picture",
                                 modifier = Modifier.size(30.dp).clip(CircleShape)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Column {
                                 Text(comment.content, style = MaterialTheme.typography.bodyMedium)
-                                Text("username", style = MaterialTheme.typography.bodySmall)
+                                comment.author["name"]?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
                             }
                         }
                         if (comment.author.keys.contains("id") && comment.author["id"] == FirebaseAuthInstance.auth.uid) {
