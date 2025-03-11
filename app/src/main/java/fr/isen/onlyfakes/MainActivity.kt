@@ -2,6 +2,7 @@ package fr.isen.onlyfakes
 
 import AuthService
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -28,11 +29,10 @@ import fr.isen.onlyfakes.view.NewPostScreen
 import fr.isen.onlyfakes.view.component.headerBar
 import fr.isen.onlyfakes.view.component.navigationBar
 import kotlinx.coroutines.launch
+import fr.isen.onlyfakes.view.PaymentView
+import fr.isen.onlyfakes.view.UserProfilView
 
 class MainActivity : ComponentActivity() {
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -49,7 +49,8 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController = navController, startDestination = Routes.HOME.toString(), builder = {
                         composable(Routes.HOME.toString()) { HomeScreen(Modifier.padding(innerPadding)) }
                         composable(Routes.ADDPOST.toString()) { NewPostScreen(Modifier.padding(innerPadding)) }
-                        composable(Routes.ACCOUNT.toString()) { /*AccountScreen(mod = Modifier.padding(innerPadding))*/ }
+                        composable(Routes.ACCOUNT.toString()) { UserProfilView(Modifier.padding(innerPadding),navController)}
+                        composable("payment") { PaymentView(Modifier.padding(innerPadding))}
                     })
                 }
             }

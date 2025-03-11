@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun PaymentView(onSubscribeClick: () -> Unit, mod: Modifier) {
+fun PaymentView( mod: Modifier) {
 
     var isClicked by remember { mutableStateOf(false) }
 
@@ -86,7 +86,7 @@ fun PaymentView(onSubscribeClick: () -> Unit, mod: Modifier) {
             Button(
                 onClick = {
                     isClicked = !isClicked
-                    onSubscribeClick()
+                    //fct quand on clique pour s abonner
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = if (isClicked) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary),
                 modifier = Modifier
