@@ -1,5 +1,8 @@
 package fr.isen.onlyfakes.view
 
+import AuthService
+import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,15 +24,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import fr.isen.onlyfakes.R
+import kotlinx.coroutines.launch
+import fr.isen.onlyfakes.MainActivity
 
 @Composable
 fun LoginScreen() {
@@ -52,9 +59,11 @@ fun LoginScreen() {
                 onRegisterClick = { currentScreen = "register" },
                 onForgotPasswordClick = { currentScreen = "reset_password" }
             )
+
             "register" -> CreateAccountCard(
                 onBackToLogin = { currentScreen = "login" }
             )
+
             "reset_password" -> CardResetPassword(
                 onBackToLogin = { currentScreen = "login" }
             )
@@ -66,6 +75,8 @@ fun LoginScreen() {
 fun LoginCard(onRegisterClick: () -> Unit, onForgotPasswordClick: () -> Unit) {
     var inputlogin by remember { mutableStateOf("") }
     var inputpassword by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
@@ -104,7 +115,21 @@ fun LoginCard(onRegisterClick: () -> Unit, onForgotPasswordClick: () -> Unit) {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = { /* TODO */ },
+                onClick = {
+                    coroutineScope.launch {
+                        val result = AuthService().logInUser(inputlogin, inputpassword)
+                        if (result.isSuccess) {
+                            val intent = Intent(context, MainActivity::class.java).apply {}
+                            context.startActivity(intent)
+                        }else{
+                            Toast(context).apply {
+                                setText(result.exceptionOrNull()?.message)
+                                duration = Toast.LENGTH_SHORT
+                                show()
+                                }
+                        }
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
@@ -136,7 +161,10 @@ fun LoginCard(onRegisterClick: () -> Unit, onForgotPasswordClick: () -> Unit) {
 fun CreateAccountCard(onBackToLogin: () -> Unit) {
     var inputlogin by remember { mutableStateOf("") }
     var inputpassword by remember { mutableStateOf("") }
+    var inputusername by remember { mutableStateOf("") }
     var confirmationpassword by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
@@ -163,6 +191,15 @@ fun CreateAccountCard(onBackToLogin: () -> Unit) {
                 onValueChange = { inputlogin = it },
                 label = { Text(text = stringResource(id = R.string.login_label)) },
                 placeholder = { Text(text = stringResource(id = R.string.login_placeholder)) }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = inputusername,
+                singleLine = true,
+                onValueChange = { inputusername = it },
+                label = { Text(text = stringResource(id = R.string.username_label)) },
+                placeholder = { Text(text = stringResource(id = R.string.username_placeholder)) }
             )
             Spacer(modifier = Modifier.height(8.dp))
             TextField(
@@ -197,7 +234,29 @@ fun CreateAccountCard(onBackToLogin: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Button(
-                    onClick = { /* TODO */ },
+                    onClick = {
+                        coroutineScope.launch {
+                            if(inputpassword == confirmationpassword){
+                                val result = AuthService().registerUser(inputlogin, inputpassword, inputusername);
+                                if (result.isSuccess) {
+                                    val intent = Intent(context, MainActivity::class.java).apply {}
+                                    context.startActivity(intent)
+                                }else{
+                                    Toast(context).apply {
+                                        setText(result.exceptionOrNull()?.message)
+                                        duration = Toast.LENGTH_SHORT
+                                        show()
+                                    }
+                                }
+                            }else{
+                                Toast(context).apply {
+                                    setText("Passwords do not match")
+                                    duration = Toast.LENGTH_SHORT
+                                    show()
+                                }
+                            }
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
