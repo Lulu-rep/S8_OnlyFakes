@@ -121,6 +121,7 @@ class PostsService {
                     }
                 }
                 Log.d("PostsService", "Posts: $posts")
+                posts.sortByDescending { it.date }
                 callback(Result.success(posts))
             }
         }
