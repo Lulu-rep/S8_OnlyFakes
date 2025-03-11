@@ -23,7 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import fr.isen.onlyfakes.enums.Routes
 import fr.isen.onlyfakes.ui.theme.OnlyFakesTheme
 import fr.isen.onlyfakes.view.LoginScreen
-import fr.isen.onlyfakes.view.MainScreen
+import fr.isen.onlyfakes.view.HomeScreen
 import fr.isen.onlyfakes.view.component.headerBar
 import fr.isen.onlyfakes.view.component.navigationBar
 import kotlinx.coroutines.launch
@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
                             .padding(16.dp)
                     ) {
                         NavHost(navController = navController, startDestination = Routes.HOME.toString(), builder = {
-                            composable(Routes.HOME.toString()) { MainScreen(Modifier.padding(innerPadding)) }
+                            composable(Routes.HOME.toString()) { HomeScreen(Modifier.padding(innerPadding)) }
                             composable(Routes.ADDPOST.toString()) { /*AddPostScreen(Modifier.padding(innerPadding))*/ }
                             composable(Routes.ACCOUNT.toString()) { /*AccountScreen(mod = Modifier.padding(innerPadding))*/ }
                         })
