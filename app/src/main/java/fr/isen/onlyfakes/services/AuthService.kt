@@ -16,6 +16,7 @@ class AuthService {
                     userProfileChangeRequest {
                         displayName = username
                     }).await()
+                    user.sendEmailVerification().await()
                 Result.success(Unit)
             } else {
                 Result.failure(Exception("User registration failed"))
@@ -56,6 +57,20 @@ class AuthService {
         return try {
             auth.signOut()
             Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun ResetPassword(email: String): Result<Unit> {
+        return try {
+            auth.sendPasswordResetEmail(email).await()
+            Result.success(Unit)
+        } catch (e: FirebaseAuthException) {
+            when (e.errorCode) {
+                "ERROR_USER_NOT_FOUND" -> Result.failure(Exception("No user found for that email."))
+                else -> Result.failure(e)
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }

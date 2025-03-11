@@ -267,6 +267,8 @@ fun CreateAccountCard(onBackToLogin: () -> Unit) {
 @Composable
 fun CardResetPassword(onBackToLogin: () -> Unit) {
     var inputlogin by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
@@ -308,81 +310,29 @@ fun CardResetPassword(onBackToLogin: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Button(
-                    onClick = { /* TODO */ },
+                    onClick = {
+                        coroutineScope.launch {
+                            val result = AuthService().ResetPassword(inputlogin)
+                            if (result.isSuccess) {
+                                Toast(context).apply {
+                                    setText("Password reset email sent")
+                                    duration = Toast.LENGTH_SHORT
+                                    show()
+                                }
+                            }else{
+                                Toast(context).apply {
+                                    setText(result.exceptionOrNull()?.message)
+                                    duration = Toast.LENGTH_SHORT
+                                    show()
+                                }
+                            }
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                     )
                 ) {
                     Text(stringResource(id = R.string.reset_password))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun CardChangePassword(onBackToLogin: () -> Unit) {
-    var inputpassword by remember { mutableStateOf("") }
-    var passwordconfirmation by remember { mutableStateOf("") }
-
-    Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-        ) {
-            Text(
-                text = stringResource(id = R.string.reset_password),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp, bottom = 24.dp),
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = inputpassword,
-                singleLine = true,
-                onValueChange = { inputpassword = it },
-                label = { Text(text = stringResource(id = R.string.newpassword_label)) },
-                placeholder = { Text(text = stringResource(id = R.string.password_placeholder)) },
-                visualTransformation = PasswordVisualTransformation()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = passwordconfirmation,
-                singleLine = true,
-                onValueChange = { passwordconfirmation = it },
-                label = { Text(text = stringResource(id = R.string.confirmation_password)) },
-                placeholder = { Text(text = stringResource(id = R.string.password_placeholder)) },
-                visualTransformation = PasswordVisualTransformation()
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = stringResource(id = R.string.cancel_button),
-                    textDecoration = TextDecoration.Underline,
-                    modifier = Modifier
-                        .clickable { onBackToLogin() }
-                        .padding(8.dp)
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Button(
-                    onClick = { /* TODO */ },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                    )
-                ) {
-                    Text(stringResource(id = R.string.change_password_button))
                 }
             }
         }
