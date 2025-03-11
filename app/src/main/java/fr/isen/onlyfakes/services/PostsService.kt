@@ -14,7 +14,11 @@ class PostsService {
         return try {
             db.collection("posts").add(
                 mapOf(
-                    "authorUid" to FirebaseAuthInstance.auth.uid,
+                    "author" to mapOf(
+                        "id" to FirebaseAuthInstance.auth.uid,
+                        "name" to FirebaseAuthInstance.auth.currentUser?.displayName,
+                        "imageUrl" to FirebaseAuthInstance.auth.currentUser?.photoUrl.toString()
+                    ),
                     "title" to post.title,
                     "content" to post.content,
                     "date" to post.date,
@@ -70,7 +74,11 @@ class PostsService {
             db.collection("posts").document(postId).update(
                 "comments", FieldValue.arrayUnion(
                     mapOf(
-                        "authorUid" to FirebaseAuthInstance.auth.uid,
+                        "author" to mapOf(
+                            "id" to FirebaseAuthInstance.auth.uid,
+                            "name" to FirebaseAuthInstance.auth.currentUser?.displayName,
+                            "imageUrl" to FirebaseAuthInstance.auth.currentUser?.photoUrl.toString()
+                        ),
                         "content" to comment,
                         "date" to Date()
                     )
