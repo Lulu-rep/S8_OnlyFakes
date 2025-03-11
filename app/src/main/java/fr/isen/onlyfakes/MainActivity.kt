@@ -49,7 +49,9 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController = navController, startDestination = Routes.HOME.toString(), builder = {
                         composable(Routes.HOME.toString()) { HomeScreen(Modifier.padding(innerPadding)) }
                         composable(Routes.ADDPOST.toString()) { NewPostScreen(Modifier.padding(innerPadding)) }
-                        composable(Routes.ACCOUNT.toString()) { UserProfilView(Modifier.padding(innerPadding))}                   })
+                        composable(Routes.ACCOUNT.toString()) { UserProfilView(Modifier.padding(innerPadding),navController)}
+                        composable("payment") { PaymentView(Modifier.padding(innerPadding))}
+                    })
                 }
             }
         }
