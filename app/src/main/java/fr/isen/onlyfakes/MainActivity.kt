@@ -46,19 +46,13 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     topBar = { headerBar() },
                     bottomBar = { navigationBar(navController) }
-                ) { innerPadding ->
-                    Column(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize()
-                            .padding(16.dp)
-                    ) {
-                        NavHost(navController = navController, startDestination = Routes.HOME.toString(), builder = {
-                            composable(Routes.HOME.toString()) { HomeScreen(Modifier.padding(innerPadding)) }
-                            composable(Routes.ADDPOST.toString()) { /*AddPostScreen(Modifier.padding(innerPadding))*/ }
-                            composable(Routes.ACCOUNT.toString()) { /*AccountScreen(mod = Modifier.padding(innerPadding))*/ }
-                        })
-                    }
+                )
+                { innerPadding ->
+                    NavHost(navController = navController, startDestination = Routes.HOME.toString(), builder = {
+                        composable(Routes.HOME.toString()) { HomeScreen(Modifier.padding(innerPadding)) }
+                        composable(Routes.ADDPOST.toString()) { /*AddPostScreen(Modifier.padding(innerPadding))*/ }
+                        composable(Routes.ACCOUNT.toString()) { /*AccountScreen(mod = Modifier.padding(innerPadding))*/ }
+                    })
                 }
             }
         }

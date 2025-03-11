@@ -28,19 +28,11 @@ fun HomeScreen(modifier: Modifier) {
         }
     }
 
-    Scaffold(
-        content = { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize()
-            ) {
-                LazyColumn {
-                    items(posts) { posts ->
-                        CardPostComponent(postcard = posts, modifier = Modifier.padding(0.dp))
-                    }
-                }
-            }
+    LazyColumn(
+        modifier = modifier
+    ) {
+        items(posts) { posts ->
+            CardPostComponent(postcard = posts, modifier = Modifier.padding(0.dp))
         }
-    )
+    }
 }
