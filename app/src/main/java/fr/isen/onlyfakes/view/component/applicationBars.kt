@@ -29,11 +29,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHost
 import fr.isen.onlyfakes.R
+import fr.isen.onlyfakes.enums.Routes
 
 @Composable
 @Preview
-fun navigationBar(){
+fun navigationBar(navController: NavController){
     Row(
         Modifier.fillMaxWidth()
             .padding(bottom = 40.dp)
@@ -45,18 +48,18 @@ fun navigationBar(){
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Home, "HomeLogo") },
             selected = false,
-            onClick = {/*navController.navigate(Routes.HOMERoute)*/},
+            onClick = {navController.navigate(Routes.HOME.toString())},
         )
         NavigationBarItem(
             icon = { Icon(Icons.Outlined.AddCircle, "AddPost") },
             selected = false,
-            onClick = {/*navController.navigate(Routes.ADDPOSTRoute)*/},
+            onClick = {navController.navigate(Routes.ADDPOST.toString())},
         )
 
         NavigationBarItem(
             icon = { Icon(Icons.Filled.AccountCircle, "AddPost") },
             selected = false,
-            onClick = {/*navController.navigate(Routes.ACCOUNTRoute)*/},
+            onClick = {navController.navigate(Routes.ACCOUNT.toString())},
         )
     }
 }

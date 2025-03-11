@@ -37,7 +37,7 @@ fun HomeScreen(modifier: Modifier) {
             ) {
                 LazyColumn {
                     items(posts) { posts ->
-                        CardPostComponent(postcard = posts, modifier = Modifier.padding(16.dp))
+                        CardPostComponent(postcard = posts, modifier = Modifier.padding(0.dp))
                     }
                 }
             }
