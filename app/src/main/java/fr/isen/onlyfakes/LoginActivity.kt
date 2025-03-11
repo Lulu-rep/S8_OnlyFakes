@@ -41,8 +41,6 @@ class LoginActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview2() {
     OnlyFakesTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            LoginScreen(modifier = Modifier.padding(innerPadding).padding(32.dp))
-        }
+        LoginScreen()
     }
 }

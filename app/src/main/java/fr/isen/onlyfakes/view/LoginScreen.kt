@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import fr.isen.onlyfakes.R
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier) {
+fun LoginScreen() {
     var currentScreen by remember { mutableStateOf("login") }
 
     Column(
