@@ -23,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +45,8 @@ import fr.isen.onlyfakes.services.instances.FirebaseAuthInstance
 import fr.isen.onlyfakes.view.component.CardPostComponent
 import java.io.File
 import androidx.core.net.toUri
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -54,6 +57,7 @@ fun UserProfilView(modifier: Modifier, navController: NavController) {
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val postsService = PostsService()
     var posts by remember { mutableStateOf<List<PostModel>>(emptyList()) }
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         postsService.getPosts { result ->
@@ -102,6 +106,9 @@ fun UserProfilView(modifier: Modifier, navController: NavController) {
                     user?.updateProfile(profileUpdates)?.addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             Log.d("UserProfilView", "User profile updated.")
+                            coroutineScope.launch{
+                                postsService.updateProfilePictureforPosts(it)
+                            }
                         }
                     }
                 }
