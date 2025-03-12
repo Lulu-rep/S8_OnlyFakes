@@ -2,10 +2,10 @@ package fr.isen.onlyfakes.view
 
 import ImageService
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -68,16 +68,6 @@ fun UserProfilView(modifier: Modifier, navController: NavController) {
     ) { uri: Uri? ->
         imageUri = uri
         Log.d("UserProfilView", "Selected image URI: $uri")
-        uri?.let {
-            val inputStream = context.contentResolver.openInputStream(it)
-            inputStream?.let { stream ->
-                val file = File(context.cacheDir, "upload_image.jpg")
-                file.outputStream().use { output ->
-                    stream.copyTo(output)
-                }
-                imageService.uploadImage(file.path)
-            }
-        }
     }
 
     val requestPermissionLauncher = rememberLauncherForActivityResult(
@@ -86,7 +76,22 @@ fun UserProfilView(modifier: Modifier, navController: NavController) {
         if (isGranted) {
             pickImageLauncher.launch("image/*")
         } else {
-            // Handle permission denial
+            Log.d("UserProfilView", "Permission denied")
+        }
+    }
+
+    // Trigger image upload when imageUri changes
+    imageUri?.let { uri ->
+        LaunchedEffect(uri) {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            inputStream?.let { stream ->
+                val file = File(context.cacheDir, "upload_image.jpg")
+                file.outputStream().use { output ->
+                    stream.copyTo(output)
+                }
+                val url = imageService.uploadImage(file.path)
+                Log.d("UserProfilView", "Uploaded image URL: $url")
+            }
         }
     }
 
@@ -122,10 +127,26 @@ fun UserProfilView(modifier: Modifier, navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(onClick = {
-                if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PermissionChecker.PERMISSION_GRANTED) {
-                    requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (ContextCompat.checkSelfPermission(
+                            context,
+                            android.Manifest.permission.READ_MEDIA_IMAGES
+                        ) != PermissionChecker.PERMISSION_GRANTED
+                    ) {
+                        requestPermissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES)
+                    } else {
+                        pickImageLauncher.launch("image/*")
+                    }
                 } else {
-                    pickImageLauncher.launch("image/*")
+                    if (ContextCompat.checkSelfPermission(
+                            context,
+                            android.Manifest.permission.READ_EXTERNAL_STORAGE
+                        ) != PermissionChecker.PERMISSION_GRANTED
+                    ) {
+                        requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                    } else {
+                        pickImageLauncher.launch("image/*")
+                    }
                 }
             }, modifier = Modifier.padding(top = 16.dp)) {
                 Text("Changer la photo")

@@ -20,6 +20,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.awaitResponse
 import java.io.File
 
 class ImageService() {
@@ -112,32 +113,30 @@ class ImageService() {
         return "com.android.providers.media.documents" == uri.authority
     }
 
-    fun uploadImage(filePath: String) {
+    suspend fun uploadImage(filePath: String): String? {
+        var uploadedImageUrl: String? = null
         Log.d("UPLOAD", "Uploading image: $filePath")
         val file = File(filePath)
         val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
         val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
-        RetrofitInstance.api.uploadImage(body).enqueue(object : Callback<UploadResponsePost> {
-            override fun onResponse(
-                call: Call<UploadResponsePost>,
-                response: Response<UploadResponsePost>
-            ) {
+
+        try {
+            val response = RetrofitInstance.api.uploadImage(body).awaitResponse()
                 if (response.isSuccessful) {
                     val result = response.body()
                     if (result != null) {
+                        uploadedImageUrl = result.url.toString()
                         Log.d("UPLOAD", "Image uploaded successfully: ${result.toString()}")
-                        //TODO: Handle the response
                     } else {
                         Log.e("UPLOAD", "Error: response is null")
                     }
                 } else {
                     Log.e("UPLOAD", "Server error: ${response.errorBody()?.string()}")
                 }
+        } catch (e: Exception) {
+            Log.e("UPLOAD", "Network error: ${e.message}")
             }
 
-            override fun onFailure(call: Call<UploadResponsePost>, t: Throwable) {
-                Log.e("UPLOAD", "Network error: ${t.message}")
-            }
-        })
+        return uploadedImageUrl
     }
 }
