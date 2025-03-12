@@ -35,6 +35,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.google.firebase.auth.ktx.userProfileChangeRequest
 import fr.isen.onlyfakes.R
 import fr.isen.onlyfakes.enums.ProfileRoutes
 import fr.isen.onlyfakes.models.PostModel
@@ -42,6 +43,7 @@ import fr.isen.onlyfakes.services.PostsService
 import fr.isen.onlyfakes.services.instances.FirebaseAuthInstance
 import fr.isen.onlyfakes.view.component.CardPostComponent
 import java.io.File
+import androidx.core.net.toUri
 
 
 @Composable
@@ -92,6 +94,17 @@ fun UserProfilView(modifier: Modifier, navController: NavController) {
                 }
                 val url = imageService.uploadImage(file.path)
                 Log.d("UserProfilView", "Uploaded image URL: $url")
+                url?.let{
+                    val user = FirebaseAuthInstance.auth.currentUser
+                    val profileUpdates = userProfileChangeRequest {
+                        photoUri = it.toUri()
+                    }
+                    user?.updateProfile(profileUpdates)?.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Log.d("UserProfilView", "User profile updated.")
+                        }
+                    }
+                }
             }
         }
     }
