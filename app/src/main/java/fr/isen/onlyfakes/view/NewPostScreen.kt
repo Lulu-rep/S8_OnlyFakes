@@ -1,5 +1,6 @@
 package fr.isen.onlyfakes.view
 
+import ImageService
 import android.net.Uri
 import android.os.Build
 import android.util.Log
@@ -117,10 +118,16 @@ fun NewPostScreen(modifier: Modifier) {
         Button(
             onClick = {
                 coroutineScope.launch {
+                    val imageUrl = imageUri?.let { uri ->
+                        val filePath = ImageService().getPathFromUri(context, uri)
+                        filePath?.let { path ->
+                            ImageService().uploadImage(path)
+                        }
+                    }
                     val newPost = PostModel(
                         title = title,
                         content = content,
-                        imageUrl = imageUri.toString()
+                        imageUrl = imageUrl.toString()
                     )
                     val result = PostsService().createPost(newPost)
                     if(result.isSuccess) {
