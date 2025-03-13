@@ -13,6 +13,7 @@
     <string name="reset_password">Reset Password</string>
     <string name="cancel_button">Cancel</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_main">MainActivity</string>
     <string name="newpassword_label">New Password</string>
     <string name="change_password_button">Change Password</string>
     <string name="login_title">Log In</string>
