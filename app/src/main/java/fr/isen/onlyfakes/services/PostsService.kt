@@ -126,4 +126,18 @@ class PostsService {
             }
         }
     }
+
+    suspend fun updateProfilePictureforPosts(newUrl: String): Result<Unit>{
+        return try{
+            val userId = FirebaseAuthInstance.auth.uid
+            val posts = db.collection("posts").whereEqualTo("author.id", userId).get().await()
+            for (post in posts){
+                db.collection("posts").document(post.id).update("author.imageUrl", newUrl).await()
+            }
+            Result.success(Unit)
+        } catch (e: Exception){
+            Log.e("PostsService", "updateProfilePictureforPosts: $e")
+            Result.failure(e)
+        }
+    }
 }
