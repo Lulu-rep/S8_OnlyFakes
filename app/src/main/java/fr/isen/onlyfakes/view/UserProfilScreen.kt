@@ -6,10 +6,12 @@ import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,10 +19,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -45,24 +49,27 @@ import fr.isen.onlyfakes.services.instances.FirebaseAuthInstance
 import fr.isen.onlyfakes.view.component.CardPostComponent
 import java.io.File
 import androidx.core.net.toUri
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 
 @Composable
-fun UserProfilView(modifier: Modifier, navController: NavController) {
+fun UserProfilView(modifier: Modifier, navController: NavController, user_id : String) {
     val context = LocalContext.current
     val imageService = remember { ImageService() }
 
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val postsService = PostsService()
-    var posts by remember { mutableStateOf<List<PostModel>>(emptyList()) }
+    var user_posts = remember { mutableStateListOf<PostModel>() }
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         postsService.getPosts { result ->
             result.onSuccess { fetchedPosts ->
-                posts = fetchedPosts
+                for(post in fetchedPosts){
+                    if (post.author["id"] == user_id){
+                        user_posts.add(post)
+                    }
+                }
                 Log.d("MainScreen", "Fetched posts: $fetchedPosts")
             }.onFailure { exception ->
                 Log.e("MainScreen", "Error fetching posts: ${exception.message}")
@@ -116,77 +123,89 @@ fun UserProfilView(modifier: Modifier, navController: NavController) {
         }
     }
 
-    LazyColumn(modifier = modifier.fillMaxSize()) {
-        item {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(16.dp)
-            ) {
-                AsyncImage(
-                    model = FirebaseAuthInstance.auth.currentUser?.photoUrl,
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier.size(40.dp),
-                    placeholder = painterResource(id = R.drawable.ic_launcher_playstore),
-                    error = painterResource(id = R.drawable.ic_launcher_playstore),
-                )
+    if(!user_posts.isEmpty()){
 
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Column {
-                    Text(
-                        text = FirebaseAuthInstance.auth.currentUser?.displayName.toString(),
-                        fontSize = 20.sp,
-                        color = Color.Black
+        LazyColumn(modifier = modifier.fillMaxSize()) {
+            item {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    AsyncImage(
+                        model = user_posts[0].author["imageUrl"],
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier.size(60.dp),
+                        placeholder = painterResource(id = R.drawable.defaultprofilepic),
+                        error = painterResource(id = R.drawable.defaultprofilepic),
                     )
 
-                    Button(onClick = { /* Modifier le profil */ }) {
-                        Text("Modifier")
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    user_posts[0].author["name"]?.let {
+                        Text(
+                            text = it,
+                            fontSize = 20.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
                     }
                 }
+
+                //Spacer(modifier = Modifier.height(16.dp))
+                if(FirebaseAuthInstance.auth.uid == user_id){
+                    Row(
+                        modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Button(onClick = { /* Modifier le profil */ }) {
+                            Text("Modifier")
+                        }
+                        Button(onClick = {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                if (ContextCompat.checkSelfPermission(
+                                        context,
+                                        android.Manifest.permission.READ_MEDIA_IMAGES
+                                    ) != PermissionChecker.PERMISSION_GRANTED
+                                ) {
+                                    requestPermissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES)
+                                } else {
+                                    pickImageLauncher.launch("image/*")
+                                }
+                            } else {
+                                if (ContextCompat.checkSelfPermission(
+                                        context,
+                                        android.Manifest.permission.READ_EXTERNAL_STORAGE
+                                    ) != PermissionChecker.PERMISSION_GRANTED
+                                ) {
+                                    requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                                } else {
+                                    pickImageLauncher.launch("image/*")
+                                }
+                            }
+                        }
+                        ) {
+                            Text("Changer la photo")
+                        }
+                    }
+                }
+                else{
+                    Button(
+                        modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                        onClick = {
+                            navController.navigate(ProfileRoutes.PAYEMENT.toString())
+                        }
+                    ) {
+                        Text("Abonnement Premium")
+                    }
+                }
+
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(onClick = {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    if (ContextCompat.checkSelfPermission(
-                            context,
-                            android.Manifest.permission.READ_MEDIA_IMAGES
-                        ) != PermissionChecker.PERMISSION_GRANTED
-                    ) {
-                        requestPermissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES)
-                    } else {
-                        pickImageLauncher.launch("image/*")
-                    }
-                } else {
-                    if (ContextCompat.checkSelfPermission(
-                            context,
-                            android.Manifest.permission.READ_EXTERNAL_STORAGE
-                        ) != PermissionChecker.PERMISSION_GRANTED
-                    ) {
-                        requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                    } else {
-                        pickImageLauncher.launch("image/*")
-                    }
-                }
-            }, modifier = Modifier.padding(top = 16.dp)) {
-                Text("Changer la photo")
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = {
-                    navController.navigate(ProfileRoutes.PAYEMENT.toString())
-                }
-            ) {
-                Text("Abonnement Premium")
+            items(user_posts) { post ->
+                CardPostComponent(postcard = post, modifier = Modifier.padding(0.dp), navController)
             }
         }
 
-        items(posts) { post ->
-            if (FirebaseAuthInstance.auth.currentUser?.uid == post.author["id"]) {
-                CardPostComponent(postcard = post, modifier = Modifier.padding(0.dp))
-            }
-        }
     }
+
 }

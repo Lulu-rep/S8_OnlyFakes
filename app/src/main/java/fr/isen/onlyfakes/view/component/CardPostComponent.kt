@@ -2,6 +2,7 @@ package fr.isen.onlyfakes.view.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,15 +48,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import fr.isen.onlyfakes.R
+import fr.isen.onlyfakes.enums.Routes
 import fr.isen.onlyfakes.models.PostModel
 import fr.isen.onlyfakes.services.PostsService
 import fr.isen.onlyfakes.services.instances.FirebaseAuthInstance
 import kotlinx.coroutines.launch
 
 @Composable
-fun CardPostComponent(postcard: PostModel, modifier: Modifier) {
+fun CardPostComponent(postcard: PostModel, modifier: Modifier, navController: NavController) {
     val coroutineScope = rememberCoroutineScope()
     var userComment by remember { mutableStateOf("") }
     var isLiked by remember { mutableStateOf(postcard.likes.contains(FirebaseAuthInstance.auth.uid)) }
@@ -82,10 +85,17 @@ fun CardPostComponent(postcard: PostModel, modifier: Modifier) {
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            Modifier.clickable {
+                                navController.navigate(Routes.ACCOUNT.toString() + "/" + postcard.author["id"])
+                            },
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             AsyncImage(
                                 model = postcard.author["imageUrl"],
                                 contentDescription = "Profile Picture",
+                                placeholder = painterResource(id = R.drawable.defaultprofilepic),
+                                error = painterResource(id = R.drawable.defaultprofilepic),
                                 modifier = Modifier
                                     .size(40.dp)
                                     .clip(CircleShape),

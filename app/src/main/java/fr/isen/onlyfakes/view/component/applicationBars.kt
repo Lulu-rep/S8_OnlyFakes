@@ -39,6 +39,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHost
 import fr.isen.onlyfakes.R
 import fr.isen.onlyfakes.enums.Routes
+import fr.isen.onlyfakes.services.instances.FirebaseAuthInstance
 
 @Composable
 fun navigationBar(navController: NavController) {
@@ -74,7 +75,7 @@ fun navigationBar(navController: NavController) {
             selected = selectedRoute == Routes.ACCOUNT.toString(),
             onClick = {
                 selectedRoute = Routes.ACCOUNT.toString()
-                navController.navigate(Routes.ACCOUNT.toString())
+                navController.navigate(Routes.ACCOUNT.toString() + "/" + FirebaseAuthInstance.auth.uid!!)
                       },
         )
     }

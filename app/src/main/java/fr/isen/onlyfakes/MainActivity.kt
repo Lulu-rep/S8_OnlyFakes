@@ -17,9 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import fr.isen.onlyfakes.enums.ProfileRoutes
 import fr.isen.onlyfakes.enums.Routes
 import fr.isen.onlyfakes.ui.theme.OnlyFakesTheme
@@ -48,9 +50,17 @@ class MainActivity : ComponentActivity() {
                 )
                 { innerPadding ->
                     NavHost(navController = navController, startDestination = Routes.HOME.toString(), builder = {
-                        composable(Routes.HOME.toString()) { HomeScreen(Modifier.padding(innerPadding)) }
+                        composable(Routes.HOME.toString()) { HomeScreen(Modifier.padding(innerPadding), navController) }
                         composable(Routes.ADDPOST.toString()) { NewPostScreen(Modifier.padding(innerPadding)) }
-                        composable(Routes.ACCOUNT.toString()) { UserProfilView(Modifier.padding(innerPadding),navController)}
+                        composable(
+                            Routes.ACCOUNT.toString() + "/{user_id}",
+                            arguments = listOf(navArgument("user_id"){
+                                type = NavType.StringType
+                            })
+                        ) { backStackEntry ->
+                            val userId = backStackEntry.arguments?.getString("user_id")
+                            UserProfilView(Modifier.padding(innerPadding),navController, userId!!)
+                        }
                         composable(ProfileRoutes.PAYEMENT.toString()) { PaymentView(Modifier.padding(innerPadding))}
                     })
                 }

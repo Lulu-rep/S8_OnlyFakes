@@ -8,12 +8,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import fr.isen.onlyfakes.models.PostModel
 import fr.isen.onlyfakes.services.PostsService
 import fr.isen.onlyfakes.view.component.CardPostComponent
 
 @Composable
-fun HomeScreen(modifier: Modifier) {
+fun HomeScreen(modifier: Modifier, navController: NavController) {
     val postsService = PostsService()
     var posts by remember { mutableStateOf<List<PostModel>>(emptyList()) }
 
@@ -32,7 +33,7 @@ fun HomeScreen(modifier: Modifier) {
         modifier = modifier
     ) {
         items(posts) { posts ->
-            CardPostComponent(postcard = posts, modifier = Modifier.padding(0.dp))
+            CardPostComponent(postcard = posts, modifier = Modifier.padding(0.dp), navController)
         }
     }
 }
