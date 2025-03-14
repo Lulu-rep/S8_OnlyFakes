@@ -1,6 +1,8 @@
 package fr.isen.onlyfakes.view
 
 import AuthService
+import android.widget.Toast
+import android.widget.Toast.makeText
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +24,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,6 +39,7 @@ import kotlinx.coroutines.launch
 fun EditProfileView(currentName: String, navController: NavController) {
     val coroutineScope = rememberCoroutineScope()
     var newName by remember { mutableStateOf("") }
+    var context = LocalContext.current
 
     LazyColumn(
         modifier = Modifier
@@ -77,8 +81,13 @@ fun EditProfileView(currentName: String, navController: NavController) {
         item {
             Button(onClick = {
                 coroutineScope.launch {
-                    AuthService().editUsername(newName)
-                    navController.navigate(Routes.HOME.toString())
+                    var response = AuthService().editUsername(newName)
+                    if(response.isSuccess){
+                        navController.navigate(Routes.HOME.toString())
+                    } else {
+                        val toast = Toast.makeText(context, response.exceptionOrNull()?.message, Toast.LENGTH_SHORT)
+                        toast.show()
+                    }
                 }
             }) {
                 Text(text = "Enregistrer",
