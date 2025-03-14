@@ -19,10 +19,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Comment
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -64,7 +68,7 @@ fun CardPostComponent(postcard: PostModel, modifier: Modifier, navController: Na
     val coroutineScope = rememberCoroutineScope()
     var userComment by remember { mutableStateOf("") }
     var isLiked by remember { mutableStateOf(postcard.likes.contains(FirebaseAuthInstance.auth.uid)) }
-    var commentVisible by remember {mutableStateOf(false)}
+    var commentVisible by remember { mutableStateOf(false) }
 
     Card(
         modifier = modifier
@@ -159,7 +163,8 @@ fun CardPostComponent(postcard: PostModel, modifier: Modifier, navController: Na
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(SimpleDateFormat("dd MMM yyyy hh:mm", Locale.UK).format(postcard.date),
+                    Text(
+                        SimpleDateFormat("dd MMM yyyy hh:mm", Locale.UK).format(postcard.date),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onPrimary,
                     )
@@ -189,20 +194,52 @@ fun CardPostComponent(postcard: PostModel, modifier: Modifier, navController: Na
                     color = MaterialTheme.colorScheme.background,
                     thickness = 1.dp
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                FloatingActionButton(
-                    onClick = {
-                        commentVisible = !commentVisible},
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                ){
-                    Text(if (commentVisible) "Hide comments" else "Show comments")
+                if(postcard.comments.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Button(
+                            onClick = {
+                                commentVisible = !commentVisible
+                            },
+                            modifier = Modifier
+                                .padding(8.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    Icons.Default.Comment,
+                                    contentDescription = "Comment section",
+                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier
+                                        .padding(end = 4.dp)
+                                )
+                                Text(if (commentVisible) "Hide ${postcard.comments.size} comment(s)" else "Show ${postcard.comments.size} comment(s)")
+                                if (!commentVisible) {
+                                    Icon(
+                                        Icons.Default.KeyboardArrowDown,
+                                        contentDescription = "Show comments",
+                                        tint = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                } else {
+                                    Icon(
+                                        Icons.Default.KeyboardArrowUp,
+                                        contentDescription = "Hide comments",
+                                        tint = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
+                            }
+
+
+                        }
+                    }
                 }
 
-                if(commentVisible) {
-                    Spacer(modifier = Modifier.height(16.dp))
+                if (commentVisible) {
                     postcard.comments.forEach { comment ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -250,42 +287,42 @@ fun CardPostComponent(postcard: PostModel, modifier: Modifier, navController: Na
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        TextField(
-                            value = userComment,
-                            onValueChange = { userComment = it },
-                            placeholder = { Text("Comment") },
-                            shape = RoundedCornerShape(20.dp),
-                            colors = TextFieldDefaults.colors(
-                                unfocusedIndicatorColor = Color.Transparent,
-                                focusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                errorIndicatorColor = Color.Transparent
-                            ),
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(horizontal = 8.dp)
-                        )
-                        FloatingActionButton(
-                            onClick = {
-                                coroutineScope.launch {
-                                    PostsService().addComment(postcard.id, userComment)
-                                    userComment = ""
-                                }
-
-                            },
-                            containerColor = MaterialTheme.colorScheme.primary
-                        ) {
-                            Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(4.dp))
                 }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TextField(
+                        value = userComment,
+                        onValueChange = { userComment = it },
+                        placeholder = { Text("Comment") },
+                        shape = RoundedCornerShape(20.dp),
+                        colors = TextFieldDefaults.colors(
+                            unfocusedIndicatorColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            errorIndicatorColor = Color.Transparent
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 8.dp)
+                    )
+                    FloatingActionButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                PostsService().addComment(postcard.id, userComment)
+                                userComment = ""
+                            }
+
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
+                    }
+                }
+                Spacer(modifier = Modifier.height(4.dp))
             }
         }
     }

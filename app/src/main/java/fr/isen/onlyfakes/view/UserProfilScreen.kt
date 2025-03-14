@@ -214,7 +214,7 @@ fun currentUserHeadBand(modifier: Modifier, navController: NavController){
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Button(onClick = { navController.navigate(ProfileRoutes.MODIFY.toString()) }) {
-                Text("Modifier")
+                Text("Change Username")
             }
             Button(onClick = {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -240,7 +240,7 @@ fun currentUserHeadBand(modifier: Modifier, navController: NavController){
                 }
             }
             ) {
-                Text("Changer la photo")
+                Text("Change Picture")
             }
         }
 
