@@ -1,9 +1,12 @@
 package fr.isen.onlyfakes.view
 
+import AuthService
 import ImageService
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +21,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,6 +56,7 @@ import fr.isen.onlyfakes.services.instances.FirebaseAuthInstance
 import fr.isen.onlyfakes.view.component.CardPostComponent
 import java.io.File
 import androidx.core.net.toUri
+import fr.isen.onlyfakes.LoginActivity
 import kotlinx.coroutines.launch
 
 
@@ -231,6 +239,45 @@ fun currentUserHeadBand(modifier: Modifier){
                 Text("Changer la photo")
             }
         }
+
+        Button(
+            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary
+            ),
+            onClick = {
+                coroutineScope.launch {
+                    val result = AuthService().signOutUser()
+                    if (result.isSuccess) {
+                        val intent = Intent(context, LoginActivity::class.java).apply {}
+                        context.startActivity(intent)
+                    } else {
+                        val toast = Toast.makeText(
+                            context,
+                            result.exceptionOrNull()?.message,
+                            Toast.LENGTH_SHORT
+                        )
+                        toast.show()
+                    }
+                }
+            },
+        ) {
+            Text(
+                text = "Disconnect",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.background,
+                modifier = Modifier.padding(end = 6.dp)
+            )
+
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                contentDescription = "Logout Icon",
+                tint = MaterialTheme.colorScheme.background,
+                modifier = Modifier.size(30.dp)
+            )
+        }
+        
+
     }
 
 
