@@ -77,24 +77,28 @@ fun UserProfilView(modifier: Modifier, navController: NavController, user_id : S
 
 
     if(user_id == FirebaseAuthInstance.auth.currentUser?.uid){
-        if(!user_posts.isEmpty()){
-            LazyColumn(modifier = modifier.fillMaxSize()) {
-                item {
-                    currentUserHeadBand(modifier)
-                }
+
+        LazyColumn(modifier = modifier.fillMaxSize()) {
+            item {
+                currentUserHeadBand(modifier)
+            }
+            if(!user_posts.isEmpty()) {
                 items(user_posts) { post ->
-                    CardPostComponent(postcard = post, modifier = Modifier.padding(0.dp), navController)
+                    CardPostComponent(
+                        postcard = post,
+                        modifier = Modifier.padding(0.dp),
+                        navController
+                    )
                 }
             }
+
         }
-        else{
-            currentUserHeadBand(modifier)
-        }
+
     }
     else{
         if(!user_posts.isEmpty()){
             //otherUserHeadBand(modifier = modifier, navController = navController, user_posts[0])
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(modifier = modifier.fillMaxSize()) {
                 item {
                     otherUserHeadBand(modifier = modifier, navController = navController, user_posts[0])
                 }
@@ -166,9 +170,7 @@ fun currentUserHeadBand(modifier: Modifier){
 
 
 
-    Column(
-        modifier = modifier,
-    ) {
+    Column() {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -237,9 +239,7 @@ fun currentUserHeadBand(modifier: Modifier){
 
 @Composable
 fun otherUserHeadBand(modifier: Modifier, navController: NavController, postModel: PostModel){
-    Column(
-        modifier = modifier,
-    ) {
+    Column() {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
