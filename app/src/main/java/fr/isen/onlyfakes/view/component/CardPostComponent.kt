@@ -62,6 +62,8 @@ fun CardPostComponent(postcard: PostModel, modifier: Modifier, navController: Na
     val coroutineScope = rememberCoroutineScope()
     var userComment by remember { mutableStateOf("") }
     var isLiked by remember { mutableStateOf(postcard.likes.contains(FirebaseAuthInstance.auth.uid)) }
+    var commentVisible by remember {mutableStateOf(false)}
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -138,11 +140,19 @@ fun CardPostComponent(postcard: PostModel, modifier: Modifier, navController: Na
                                     }
                                 },
                             ) {
-                                Icon(
-                                    if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                    contentDescription = "Like",
-                                    tint = MaterialTheme.colorScheme.tertiary
-                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                        contentDescription = "Like",
+                                        tint = MaterialTheme.colorScheme.tertiary
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        postcard.likes.size.toString(),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
                             }
                         }
                     }
@@ -173,87 +183,101 @@ fun CardPostComponent(postcard: PostModel, modifier: Modifier, navController: Na
                     thickness = 1.dp
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                postcard.comments.forEach { comment ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            AsyncImage(
-                                model = comment.author["imageUrl"],
-                                contentDescription = "Comment author picture",
-                                modifier = Modifier
-                                    .size(30.dp)
-                                    .clip(CircleShape)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Column {
-                                comment.author["name"]?.let {
+
+                FloatingActionButton(
+                    onClick = {
+                        commentVisible = !commentVisible},
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                ){
+                    Text(if (commentVisible) "Hide comments" else "Show comments")
+                }
+
+                if(commentVisible) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    postcard.comments.forEach { comment ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                AsyncImage(
+                                    model = comment.author["imageUrl"],
+                                    contentDescription = "Comment author picture",
+                                    modifier = Modifier
+                                        .size(30.dp)
+                                        .clip(CircleShape)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Column {
+                                    comment.author["name"]?.let {
+                                        Text(
+                                            it,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
                                     Text(
-                                        it,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        fontWeight = FontWeight.Bold
+                                        comment.content,
+                                        style = MaterialTheme.typography.bodyMedium
                                     )
                                 }
-                                Text(
-                                    comment.content,
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
+                            }
+                            if (comment.author.keys.contains("id") && comment.author["id"] == FirebaseAuthInstance.auth.uid) {
+                                IconButton(
+                                    onClick = {
+                                        coroutineScope.launch {
+                                            PostsService().deleteComment(postcard.id, comment)
+                                        }
+                                    }
+                                ) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = "Delete comment"
+                                    )
+                                }
                             }
                         }
-                        if (comment.author.keys.contains("id") && comment.author["id"] == FirebaseAuthInstance.auth.uid) {
-                            IconButton(
-                                onClick = {
-                                    coroutineScope.launch {
-                                        PostsService().deleteComment(postcard.id, comment)
-                                    }
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        TextField(
+                            value = userComment,
+                            onValueChange = { userComment = it },
+                            placeholder = { Text("Comment") },
+                            shape = RoundedCornerShape(20.dp),
+                            colors = TextFieldDefaults.colors(
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent,
+                                errorIndicatorColor = Color.Transparent
+                            ),
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 8.dp)
+                        )
+                        FloatingActionButton(
+                            onClick = {
+                                coroutineScope.launch {
+                                    PostsService().addComment(postcard.id, userComment)
+                                    userComment = ""
                                 }
-                            ) {
-                                Icon(
-                                    Icons.Default.Delete,
-                                    contentDescription = "Delete comment"
-                                )
-                            }
+
+                            },
+                            containerColor = MaterialTheme.colorScheme.primary
+                        ) {
+                            Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
                         }
                     }
                     Spacer(modifier = Modifier.height(4.dp))
                 }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    TextField(
-                        value = userComment,
-                        onValueChange = { userComment = it },
-                        placeholder = { Text("Comment") },
-                        shape = RoundedCornerShape(20.dp),
-                        colors = TextFieldDefaults.colors(
-                            unfocusedIndicatorColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent,
-                            errorIndicatorColor = Color.Transparent
-                        ),
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 8.dp)
-                    )
-                    FloatingActionButton(
-                        onClick = {
-                            coroutineScope.launch {
-                                PostsService().addComment(postcard.id, userComment)
-                                userComment = ""
-                            }
-
-                        },
-                        containerColor = MaterialTheme.colorScheme.primary
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
-                    }
-                }
-                Spacer(modifier = Modifier.height(4.dp))
             }
         }
     }
