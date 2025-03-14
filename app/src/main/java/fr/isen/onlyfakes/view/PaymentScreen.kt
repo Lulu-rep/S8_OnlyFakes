@@ -95,7 +95,7 @@ fun PaymentView( mod: Modifier) {
             ) {
                 Text(
                     text = "S'abonner",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.background,
                     fontSize = 18.sp
                 )
             }
