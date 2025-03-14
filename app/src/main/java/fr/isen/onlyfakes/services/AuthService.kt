@@ -1,5 +1,6 @@
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.userProfileChangeRequest
+import fr.isen.onlyfakes.services.PostsService
 import fr.isen.onlyfakes.services.instances.FirebaseAuthInstance.auth
 import kotlinx.coroutines.tasks.await
 
@@ -82,6 +83,7 @@ class AuthService {
                 userProfileChangeRequest {
                     displayName = username
                 })?.await()
+            PostsService().updateUserDisplayName(username)
             Result.success(Unit)
         } catch (e: FirebaseAuthException) {
             when (e.errorCode) {

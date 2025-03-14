@@ -140,4 +140,18 @@ class PostsService {
             Result.failure(e)
         }
     }
+
+    suspend fun updateUserDisplayName(newName: String): Result<Unit>{
+        return try{
+            val userId = FirebaseAuthInstance.auth.uid
+            val posts = db.collection("posts").whereEqualTo("author.id", userId).get().await()
+            for (post in posts){
+                db.collection("posts").document(post.id).update("author.name", newName).await()
+            }
+            Result.success(Unit)
+        } catch (e: Exception){
+            Log.e("PostsService", "updateUserDisplayName: $e")
+            Result.failure(e)
+        }
+    }
 }
