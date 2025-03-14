@@ -265,14 +265,12 @@ fun currentUserHeadBand(modifier: Modifier){
             Text(
                 text = "Disconnect",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.background,
                 modifier = Modifier.padding(end = 6.dp)
             )
 
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                 contentDescription = "Logout Icon",
-                tint = MaterialTheme.colorScheme.background,
                 modifier = Modifier.size(30.dp)
             )
         }
