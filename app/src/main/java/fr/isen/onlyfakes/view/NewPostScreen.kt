@@ -31,7 +31,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import fr.isen.onlyfakes.enums.Routes
 import fr.isen.onlyfakes.models.PostModel
 import fr.isen.onlyfakes.services.PostsService
 import kotlinx.coroutines.launch
@@ -39,7 +41,7 @@ import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewPostScreen(modifier: Modifier) {
+fun NewPostScreen(modifier: Modifier, navController: NavController) {
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
@@ -200,6 +202,7 @@ fun NewPostScreen(modifier: Modifier) {
                                 Toast.makeText(context, "Error creating post", Toast.LENGTH_SHORT)
                                     .show()
                             }
+                            navController.navigate(Routes.HOME.toString())
                         }
                     },
                     modifier = Modifier

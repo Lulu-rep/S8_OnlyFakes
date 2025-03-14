@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                 { innerPadding ->
                     NavHost(navController = navController, startDestination = Routes.HOME.toString(), builder = {
                         composable(Routes.HOME.toString()) { HomeScreen(Modifier.padding(innerPadding), navController) }
-                        composable(Routes.ADDPOST.toString()) { NewPostScreen(Modifier.padding(innerPadding)) }
+                        composable(Routes.ADDPOST.toString()) { NewPostScreen(Modifier.padding(innerPadding), navController) }
                         composable(
                             Routes.ACCOUNT.toString() + "/{user_id}",
                             arguments = listOf(navArgument("user_id"){
@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
                             UserProfilView(Modifier.padding(innerPadding),navController, userId!!)
                         }
                         composable(ProfileRoutes.PAYEMENT.toString()) { PaymentView(Modifier.padding(innerPadding))}
-                        composable(ProfileRoutes.MODIFY.toString()) { EditProfileView(FirebaseAuthInstance.auth.currentUser!!.displayName!!)}
+                        composable(ProfileRoutes.MODIFY.toString()) { EditProfileView(FirebaseAuthInstance.auth.currentUser!!.displayName!!, navController)}
                     })
                 }
             }

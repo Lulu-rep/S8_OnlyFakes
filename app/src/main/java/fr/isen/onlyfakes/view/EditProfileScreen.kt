@@ -26,12 +26,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.google.rpc.context.AttributeContext.Auth
+import fr.isen.onlyfakes.enums.Routes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun EditProfileView(currentName: String) {
+fun EditProfileView(currentName: String, navController: NavController) {
     val coroutineScope = rememberCoroutineScope()
     var newName by remember { mutableStateOf("") }
 
@@ -76,6 +78,7 @@ fun EditProfileView(currentName: String) {
             Button(onClick = {
                 coroutineScope.launch {
                     AuthService().editUsername(newName)
+                    navController.navigate(Routes.HOME.toString())
                 }
             }) {
                 Text(text = "Enregistrer",
