@@ -308,7 +308,7 @@ fun CardResetPassword(navController: NavController) {
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            val result = AuthService().ResetPassword(inputlogin)
+                            val result = AuthService().resetPassword(inputlogin)
                             if (result.isSuccess) {
                                 Toast(context).apply {
                                     setText("Password reset email sent")

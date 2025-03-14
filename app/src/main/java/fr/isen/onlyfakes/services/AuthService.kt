@@ -61,9 +61,27 @@ class AuthService {
         }
     }
 
-    suspend fun ResetPassword(email: String): Result<Unit> {
+    suspend fun resetPassword(email: String): Result<Unit> {
         return try {
             auth.sendPasswordResetEmail(email).await()
+            Result.success(Unit)
+        } catch (e: FirebaseAuthException) {
+            when (e.errorCode) {
+                "ERROR_USER_NOT_FOUND" -> Result.failure(Exception("No user found for that email."))
+                else -> Result.failure(e)
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun editUsername(username: String): Result<Unit>{
+        return try{
+            val user = auth.currentUser
+            user?.updateProfile(
+                userProfileChangeRequest {
+                    displayName = username
+                })?.await()
             Result.success(Unit)
         } catch (e: FirebaseAuthException) {
             when (e.errorCode) {
