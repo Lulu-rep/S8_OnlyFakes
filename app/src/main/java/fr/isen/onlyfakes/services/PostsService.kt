@@ -11,6 +11,12 @@ import java.util.Date
 
 class PostsService {
     suspend fun createPost(post: PostModel): Result<Unit> {
+        if (FirebaseAuthInstance.auth.currentUser == null) {
+            return Result.failure(Exception("User not logged in"))
+        }
+        if (post.title.isEmpty() || post.content.isEmpty()) {
+            return Result.failure(Exception("Title or content is empty"))
+        }
         return try {
             db.collection("posts").add(
                 mapOf(
@@ -70,6 +76,12 @@ class PostsService {
     }
 
     suspend fun addComment(postId: String, comment: String): Result<Unit> {
+        if (FirebaseAuthInstance.auth.currentUser == null) {
+            return Result.failure(Exception("User not logged in"))
+        }
+        if (comment.isEmpty()) {
+            return Result.failure(Exception("Comment is empty"))
+        }
         return try {
             db.collection("posts").document(postId).update(
                 "comments", FieldValue.arrayUnion(
