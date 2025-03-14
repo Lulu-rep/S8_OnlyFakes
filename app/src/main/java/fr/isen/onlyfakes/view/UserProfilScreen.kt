@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -64,7 +65,7 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun UserProfilView(modifier: Modifier, navController: NavController, user_id : String) {
+fun UserProfilView(modifier: Modifier, navController: NavController, user_id: String) {
     val context = LocalContext.current
 
     val postsService = PostsService()
@@ -74,8 +75,8 @@ fun UserProfilView(modifier: Modifier, navController: NavController, user_id : S
     LaunchedEffect(Unit) {
         postsService.getPosts { result ->
             result.onSuccess { fetchedPosts ->
-                for(post in fetchedPosts){
-                    if (post.author["id"] == user_id){
+                for (post in fetchedPosts) {
+                    if (post.author["id"] == user_id) {
                         user_posts.add(post)
                     }
                 }
@@ -87,13 +88,13 @@ fun UserProfilView(modifier: Modifier, navController: NavController, user_id : S
     }
 
 
-    if(user_id == FirebaseAuthInstance.auth.currentUser?.uid){
+    if (user_id == FirebaseAuthInstance.auth.currentUser?.uid) {
 
         LazyColumn(modifier = modifier.fillMaxSize()) {
             item {
                 currentUserHeadBand(modifier, navController)
             }
-            if(!user_posts.isEmpty()) {
+            if (!user_posts.isEmpty()) {
                 items(user_posts) { post ->
                     CardPostComponent(
                         postcard = post,
@@ -105,16 +106,23 @@ fun UserProfilView(modifier: Modifier, navController: NavController, user_id : S
 
         }
 
-    }
-    else{
-        if(!user_posts.isEmpty()){
+    } else {
+        if (!user_posts.isEmpty()) {
             //otherUserHeadBand(modifier = modifier, navController = navController, user_posts[0])
             LazyColumn(modifier = modifier.fillMaxSize()) {
                 item {
-                    otherUserHeadBand(modifier = modifier, navController = navController, user_posts[0])
+                    otherUserHeadBand(
+                        modifier = modifier,
+                        navController = navController,
+                        user_posts[0]
+                    )
                 }
                 items(user_posts) { post ->
-                    CardPostComponent(postcard = post, modifier = Modifier.padding(0.dp), navController)
+                    CardPostComponent(
+                        postcard = post,
+                        modifier = Modifier.padding(0.dp),
+                        navController
+                    )
                 }
             }
         }
@@ -124,9 +132,8 @@ fun UserProfilView(modifier: Modifier, navController: NavController, user_id : S
 }
 
 
-
 @Composable
-fun currentUserHeadBand(modifier: Modifier, navController: NavController){
+fun currentUserHeadBand(modifier: Modifier, navController: NavController) {
     val context = LocalContext.current
     val imageService = remember { ImageService() }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
@@ -161,7 +168,7 @@ fun currentUserHeadBand(modifier: Modifier, navController: NavController){
                 }
                 val url = imageService.uploadImage(file.path)
                 Log.d("UserProfilView", "Uploaded image URL: $url")
-                url?.let{
+                url?.let {
                     val user = FirebaseAuthInstance.auth.currentUser
                     val profileUpdates = userProfileChangeRequest {
                         photoUri = it.toUri()
@@ -169,7 +176,7 @@ fun currentUserHeadBand(modifier: Modifier, navController: NavController){
                     user?.updateProfile(profileUpdates)?.addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             Log.d("UserProfilView", "User profile updated.")
-                            coroutineScope.launch{
+                            coroutineScope.launch {
                                 PostsService().updateProfilePictureforPosts(it)
                             }
                         }
@@ -189,7 +196,9 @@ fun currentUserHeadBand(modifier: Modifier, navController: NavController){
             AsyncImage(
                 model = FirebaseAuthInstance.auth.currentUser?.photoUrl,
                 contentDescription = "Profile Picture",
-                modifier = Modifier.size(60.dp).clip(shape = CircleShape),
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(shape = CircleShape),
                 placeholder = painterResource(id = R.drawable.defaultprofilepic),
                 error = painterResource(id = R.drawable.defaultprofilepic),
                 contentScale = ContentScale.Crop
@@ -206,46 +215,59 @@ fun currentUserHeadBand(modifier: Modifier, navController: NavController){
             }
         }
 
+        HorizontalDivider(
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .height(1.dp),
+        )
+
         Row(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Button(onClick = { navController.navigate(ProfileRoutes.MODIFY.toString()) }) {
+            Button(
+                onClick = { navController.navigate(ProfileRoutes.MODIFY.toString()) },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
+            ) {
                 Text("Change Username")
             }
-            Button(onClick = {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    if (ContextCompat.checkSelfPermission(
-                            context,
-                            android.Manifest.permission.READ_MEDIA_IMAGES
-                        ) != PermissionChecker.PERMISSION_GRANTED
-                    ) {
-                        requestPermissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES)
+            Button(
+                onClick = {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        if (ContextCompat.checkSelfPermission(
+                                context,
+                                android.Manifest.permission.READ_MEDIA_IMAGES
+                            ) != PermissionChecker.PERMISSION_GRANTED
+                        ) {
+                            requestPermissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES)
+                        } else {
+                            pickImageLauncher.launch("image/*")
+                        }
                     } else {
-                        pickImageLauncher.launch("image/*")
+                        if (ContextCompat.checkSelfPermission(
+                                context,
+                                android.Manifest.permission.READ_EXTERNAL_STORAGE
+                            ) != PermissionChecker.PERMISSION_GRANTED
+                        ) {
+                            requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                        } else {
+                            pickImageLauncher.launch("image/*")
+                        }
                     }
-                } else {
-                    if (ContextCompat.checkSelfPermission(
-                            context,
-                            android.Manifest.permission.READ_EXTERNAL_STORAGE
-                        ) != PermissionChecker.PERMISSION_GRANTED
-                    ) {
-                        requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                    } else {
-                        pickImageLauncher.launch("image/*")
-                    }
-                }
-            }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
             ) {
                 Text("Change Picture")
             }
         }
 
         Button(
-            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary
             ),
@@ -278,7 +300,7 @@ fun currentUserHeadBand(modifier: Modifier, navController: NavController){
                 modifier = Modifier.size(30.dp)
             )
         }
-        
+
 
     }
 
@@ -287,7 +309,7 @@ fun currentUserHeadBand(modifier: Modifier, navController: NavController){
 
 
 @Composable
-fun otherUserHeadBand(modifier: Modifier, navController: NavController, postModel: PostModel){
+fun otherUserHeadBand(modifier: Modifier, navController: NavController, postModel: PostModel) {
     Column() {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -296,7 +318,9 @@ fun otherUserHeadBand(modifier: Modifier, navController: NavController, postMode
             AsyncImage(
                 model = postModel.author["imageUrl"],
                 contentDescription = "Profile Picture",
-                modifier = Modifier.size(60.dp).clip(shape = CircleShape),
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(shape = CircleShape),
                 placeholder = painterResource(id = R.drawable.defaultprofilepic),
                 error = painterResource(id = R.drawable.defaultprofilepic),
                 contentScale = ContentScale.Crop
@@ -314,10 +338,12 @@ fun otherUserHeadBand(modifier: Modifier, navController: NavController, postMode
         }
 
         Button(
-            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
             onClick = {
-            navController.navigate(ProfileRoutes.PAYEMENT.toString())
-        }
+                navController.navigate(ProfileRoutes.PAYEMENT.toString())
+            }
         ) {
             Text("Abonnement Premium")
         }
