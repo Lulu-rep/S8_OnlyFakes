@@ -31,9 +31,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun EditProfileView(currentName: String, onNameChange: (String) -> Unit) {
+fun EditProfileView(currentName: String) {
     val coroutineScope = rememberCoroutineScope()
-    var newName by remember { mutableStateOf(currentName) }
+    var newName by remember { mutableStateOf("") }
 
     LazyColumn(
         modifier = Modifier
@@ -73,7 +73,7 @@ fun EditProfileView(currentName: String, onNameChange: (String) -> Unit) {
         }
 
         item {
-            Button(onClick = { onNameChange(newName)
+            Button(onClick = {
                 coroutineScope.launch {
                     AuthService().editUsername(newName)
                 }

@@ -88,7 +88,7 @@ fun UserProfilView(modifier: Modifier, navController: NavController, user_id : S
 
         LazyColumn(modifier = modifier.fillMaxSize()) {
             item {
-                currentUserHeadBand(modifier)
+                currentUserHeadBand(modifier, navController)
             }
             if(!user_posts.isEmpty()) {
                 items(user_posts) { post ->
@@ -123,7 +123,7 @@ fun UserProfilView(modifier: Modifier, navController: NavController, user_id : S
 
 
 @Composable
-fun currentUserHeadBand(modifier: Modifier){
+fun currentUserHeadBand(modifier: Modifier, navController: NavController){
     val context = LocalContext.current
     val imageService = remember { ImageService() }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
@@ -209,7 +209,7 @@ fun currentUserHeadBand(modifier: Modifier){
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Button(onClick = { /* Modifier le profil */ }) {
+            Button(onClick = { navController.navigate(ProfileRoutes.MODIFY.toString()) }) {
                 Text("Modifier")
             }
             Button(onClick = {

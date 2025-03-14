@@ -13,5 +13,6 @@ enum class LoginRoutes() {
 }
 
 enum class ProfileRoutes(){
-    PAYEMENT
+    PAYEMENT,
+    MODIFY
 }

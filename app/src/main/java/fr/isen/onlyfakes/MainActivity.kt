@@ -24,7 +24,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import fr.isen.onlyfakes.enums.ProfileRoutes
 import fr.isen.onlyfakes.enums.Routes
+import fr.isen.onlyfakes.services.instances.FirebaseAuthInstance
 import fr.isen.onlyfakes.ui.theme.OnlyFakesTheme
+import fr.isen.onlyfakes.view.EditProfileView
 import fr.isen.onlyfakes.view.LoginScreen
 import fr.isen.onlyfakes.view.HomeScreen
 import fr.isen.onlyfakes.view.NewPostScreen
@@ -62,6 +64,7 @@ class MainActivity : ComponentActivity() {
                             UserProfilView(Modifier.padding(innerPadding),navController, userId!!)
                         }
                         composable(ProfileRoutes.PAYEMENT.toString()) { PaymentView(Modifier.padding(innerPadding))}
+                        composable(ProfileRoutes.MODIFY.toString()) { EditProfileView(FirebaseAuthInstance.auth.currentUser!!.displayName!!)}
                     })
                 }
             }
