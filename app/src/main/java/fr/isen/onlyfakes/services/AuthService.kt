@@ -6,10 +6,16 @@ import kotlinx.coroutines.tasks.await
 
 class AuthService {
 
+    var usernameLength = 15
+
     suspend fun registerUser(email: String, password: String, username: String): Result<Unit> {
         return try {
             val userCredential = auth.createUserWithEmailAndPassword(email, password).await()
             val user = userCredential.user
+
+            if (username.length > usernameLength) {
+                return Result.failure(Exception("Username is too long."))
+            }
 
             if (user != null) {
                 user.updateProfile(
@@ -77,6 +83,9 @@ class AuthService {
     }
 
     suspend fun editUsername(username: String): Result<Unit>{
+        if(username.length > usernameLength){
+            return Result.failure(Exception("Username is too long."))
+        }
         return try{
             val user = auth.currentUser
             user?.updateProfile(
