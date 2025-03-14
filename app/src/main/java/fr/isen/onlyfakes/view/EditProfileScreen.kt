@@ -1,5 +1,6 @@
 package fr.isen.onlyfakes.view
 
+import AuthService
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,9 +26,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.rpc.context.AttributeContext.Auth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun EditProfileView(currentName: String, onNameChange: (String) -> Unit) {
+    val coroutineScope = rememberCoroutineScope()
     var newName by remember { mutableStateOf(currentName) }
 
     LazyColumn(
@@ -67,7 +73,11 @@ fun EditProfileView(currentName: String, onNameChange: (String) -> Unit) {
         }
 
         item {
-            Button(onClick = { onNameChange(newName) }) {
+            Button(onClick = { onNameChange(newName)
+                coroutineScope.launch {
+                    AuthService().editUsername(newName)
+                }
+            }) {
                 Text(text = "Enregistrer",
                     color = MaterialTheme.colorScheme.background)
             }
