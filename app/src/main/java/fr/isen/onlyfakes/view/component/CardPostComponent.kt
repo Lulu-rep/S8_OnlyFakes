@@ -56,6 +56,8 @@ import fr.isen.onlyfakes.models.PostModel
 import fr.isen.onlyfakes.services.PostsService
 import fr.isen.onlyfakes.services.instances.FirebaseAuthInstance
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun CardPostComponent(postcard: PostModel, modifier: Modifier, navController: NavController) {
@@ -156,6 +158,11 @@ fun CardPostComponent(postcard: PostModel, modifier: Modifier, navController: Na
                             }
                         }
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(SimpleDateFormat("dd MMM yyyy hh:mm", Locale.UK).format(postcard.date),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    )
                 }
             }
             AsyncImage(
