@@ -215,7 +215,8 @@ fun CardPostComponent(postcard: PostModel, modifier: Modifier, navController: Na
                                     contentDescription = "Comment author picture",
                                     modifier = Modifier
                                         .size(30.dp)
-                                        .clip(CircleShape)
+                                        .clip(CircleShape),
+                                    contentScale = ContentScale.Crop
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Column {

@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.Button
@@ -38,7 +39,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -186,9 +189,10 @@ fun currentUserHeadBand(modifier: Modifier, navController: NavController){
             AsyncImage(
                 model = FirebaseAuthInstance.auth.currentUser?.photoUrl,
                 contentDescription = "Profile Picture",
-                modifier = Modifier.size(60.dp),
+                modifier = Modifier.size(60.dp).clip(shape = CircleShape),
                 placeholder = painterResource(id = R.drawable.defaultprofilepic),
                 error = painterResource(id = R.drawable.defaultprofilepic),
+                contentScale = ContentScale.Crop
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -292,9 +296,10 @@ fun otherUserHeadBand(modifier: Modifier, navController: NavController, postMode
             AsyncImage(
                 model = postModel.author["imageUrl"],
                 contentDescription = "Profile Picture",
-                modifier = Modifier.size(60.dp),
+                modifier = Modifier.size(60.dp).clip(shape = CircleShape),
                 placeholder = painterResource(id = R.drawable.defaultprofilepic),
                 error = painterResource(id = R.drawable.defaultprofilepic),
+                contentScale = ContentScale.Crop
             )
 
             Spacer(modifier = Modifier.width(8.dp))
